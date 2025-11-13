@@ -13,6 +13,7 @@ import { BehaviorSubject, Observable, of } from "rxjs";
 import { map, shareReplay, switchMap, tap } from "rxjs/operators";
 import type { Snippet } from "@mzebley/mark-down";
 import { SnippetService } from "./snippet.service";
+import DOMPurify from "dompurify";
 
 @Component({
   selector: "snippet-view",
@@ -43,7 +44,13 @@ export class SnippetViewComponent implements OnChanges {
   );
 
   readonly content$: Observable<SafeHtml | null> = this.snippet$.pipe(
-    map((snippet) => (snippet ? this.sanitizer.bypassSecurityTrustHtml(snippet.html) : null))
+    map((snippet) => {
+      if (!snippet) {
+        return null;
+      }
+      const sanitized = DOMPurify.sanitize(snippet.html);
+      return this.sanitizer.bypassSecurityTrustHtml(sanitized);
+    })
   );
 
   ngOnChanges(): void {
