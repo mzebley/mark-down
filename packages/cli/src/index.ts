@@ -2,7 +2,7 @@
 import { Command } from "commander";
 import { buildManifestFile } from "./manifest.js";
 import { watch as watchSnippets } from "./watch.js";
-import { log, logError, brand } from "./logger.js";
+import { brand, logEvent } from "./logger.js";
 import { DuplicateSlugError } from "./errors.js";
 
 const program = new Command();
@@ -18,7 +18,10 @@ program
   .action(async (sourceDir: string, options: { output?: string }) => {
     try {
       const result = await buildManifestFile({ sourceDir, outputPath: options.output });
-      log(`manifest written to ${result.outputPath}`);
+      logEvent("info", "manifest.written", {
+        outputPath: result.outputPath,
+        snippetCount: result.manifest.length
+      });
     } catch (error) {
       handleError(error);
     }
@@ -41,9 +44,15 @@ program.parseAsync(process.argv).catch(handleError);
 function handleError(error: unknown) {
   const err = error as Error;
   if (err instanceof DuplicateSlugError) {
-    logError(err.message);
+    logEvent("error", "manifest.duplicate_slug", {
+      message: err.message,
+      slugs: err.duplicates
+    });
     process.exit(2);
   }
-  logError(err.message);
+  logEvent("error", "cli.error", {
+    message: err.message,
+    stack: err.stack
+  });
   process.exit(1);
 }

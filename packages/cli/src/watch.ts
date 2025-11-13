@@ -1,11 +1,14 @@
 import path from "node:path";
 import chokidar from "chokidar";
 import { buildManifestFile, type BuildResult } from "./manifest.js";
-import { log, logError } from "./logger.js";
+import { logEvent } from "./logger.js";
 
 export async function watch(sourceDir: string, outputPath?: string) {
   const cwd = path.resolve(sourceDir);
-  log(`watching ${cwd}`);
+  logEvent("info", "watch.start", {
+    directory: cwd,
+    outputPath: outputPath ?? path.join(cwd, "snippets-index.json")
+  });
   await rebuild(cwd, outputPath);
 
   const watcher = chokidar.watch(["**/*.md"], {
@@ -22,7 +25,7 @@ export async function watch(sourceDir: string, outputPath?: string) {
   }, 150);
 
   watcher.on("all", (event, filePath) => {
-    log(`change detected (${event} ${filePath})`);
+    logEvent("info", "watch.change", { event, file: filePath });
     schedule();
   });
 }
@@ -30,10 +33,17 @@ export async function watch(sourceDir: string, outputPath?: string) {
 async function rebuild(sourceDir: string, outputPath?: string): Promise<BuildResult | void> {
   try {
     const result = await buildManifestFile({ sourceDir, outputPath });
-    log(`manifest updated at ${result.outputPath}`);
+    logEvent("info", "manifest.updated", {
+      outputPath: result.outputPath,
+      snippetCount: result.manifest.length
+    });
     return result;
   } catch (error) {
-    logError((error as Error).message);
+    const err = error as Error;
+    logEvent("error", "manifest.update_failed", {
+      message: err.message,
+      stack: err.stack
+    });
   }
 }
 
