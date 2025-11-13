@@ -37,5 +37,5 @@ export function SnippetView({
     return <div className={className}>Snippet not found</div>;
   }
 
-  return <div className={className} dangerouslySetInnerHTML={{ __html: safeHtml ?? \"\" }} />;
+  return <div className={className} dangerouslySetInnerHTML={{ __html: safeHtml ?? "" }} />;
 }
