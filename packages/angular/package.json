@@ -1,0 +1,21 @@
+{
+  "name": "@mzebley/mark-down-angular",
+  "version": "0.1.0",
+  "description": "mark↓ Angular Adapter",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --dts --format esm,cjs"
+  },
+  "dependencies": {
+    "@mzebley/mark-down": "file:../core"
+  },
+  "peerDependencies": {
+    "@angular/common": "^17.0.0",
+    "@angular/core": "^17.0.0",
+    "@angular/platform-browser": "^17.0.0",
+    "rxjs": "^7.8.0"
+  }
+}

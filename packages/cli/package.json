@@ -1,0 +1,24 @@
+{
+  "name": "@mzebley/mark-down-cli",
+  "version": "0.1.0",
+  "description": "mark↓ CLI for building snippet manifests",
+  "type": "module",
+  "bin": {
+    "mark-down": "dist/index.cjs"
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "dev": "tsup src/index.ts --watch"
+  },
+  "dependencies": {
+    "@mzebley/mark-down": "file:../core",
+    "chokidar": "^3.6.0",
+    "commander": "^11.1.0",
+    "fast-glob": "^3.3.2",
+    "gray-matter": "^4.0.3",
+    "yaml": "^2.4.1"
+  }
+}
