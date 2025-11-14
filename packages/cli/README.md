@@ -1,27 +1,97 @@
-# mark↓
-*(published as `@mzebley/mark-down`)*
+# mark↓ CLI
+*(published as `@mzebley/mark-down-cli`)*
 
-`mark-down` is the CLI for scanning Markdown snippets, parsing YAML front-matter, and emitting a sorted `snippets-index.json`.
+`mark-down` is the command-line companion to the mark↓ runtime. It scans Markdown snippets, parses YAML front matter, and emits a sorted `snippets-index.json` manifest consumed by [the core client](../core/README.md). For a full project overview, see the [monorepo README](../../README.md).
 
-## Install
-```
+## Table of contents
+
+1. [Installation](#installation)
+2. [Usage](#usage)
+3. [Commands](#commands)
+4. [Configuration options](#configuration-options)
+5. [Watching for changes](#watching-for-changes)
+6. [Exit codes](#exit-codes)
+7. [Troubleshooting](#troubleshooting)
+8. [Related packages](#related-packages)
+
+## Installation
+
+Install globally to expose the `mark-down` binary:
+
+```bash
 npm install -g @mzebley/mark-down-cli
 ```
 
+or run it on demand via `npx` without a global install:
+
+```bash
+npx @mzebley/mark-down-cli build content/snippets
+```
+
+## Usage
+
+```bash
+mark-down build <sourceDir> [options]
+```
+
+The CLI walks the directory tree, gathers front matter, and writes `snippets-index.json` alongside your Markdown files by default.
+
 ## Commands
+
 ### `mark-down build <sourceDir>`
-- Discovers `*.md` files under `sourceDir` (default `content/snippets`).
-- Parses YAML with the `yaml` package, normalizes slugs, flags duplicates, and removes drafts.
-- Writes `snippets-index.json` to the source directory by default.
-- Exit codes: `0` success, `1` failure, `2` duplicate slugs.
+
+- Discovers `*.md` files under `sourceDir` (defaults to `content/snippets`).
+- Parses YAML with the `yaml` package, normalizes slugs, flags duplicates, and removes drafts (`draft: true`).
+- Writes `snippets-index.json` to the source directory by default (use `--outDir` to override).
+- Supports relative or absolute paths.
 
 ### `mark-down watch <sourceDir>`
+
 - Uses `chokidar` to watch for file changes.
 - Debounces rebuilds to avoid thrashing during writes.
-- Logs with the `mark↓` brand.
+- Logs progress with the familiar `[mark↓]` prefix.
+- Accepts the same options as `build`.
 
-## Example
+## Configuration options
+
+Pass flags after the command:
+
+| Flag | Description |
+| --- | --- |
+| `--outDir <path>` | Write the manifest to a different folder (defaults to the source directory). |
+| `--pattern <glob>` | Custom glob for snippet discovery. Defaults to `**/*.md`. |
+| `--quiet` | Suppress non-error logging. |
+| `--drafts` | Include entries marked `draft: true` in front matter (disabled by default). |
+
+Options can also be stored in npm scripts inside your application `package.json`.
+
+## Watching for changes
+
+Use watch mode when authoring content:
+
+```bash
+mark-down watch content/snippets --outDir public/snippets
 ```
-mark-down build content/snippets
-# [mark↓] manifest written to content/snippets/snippets-index.json
-```
+
+The CLI will rebuild whenever files are created, changed, or removed.
+
+## Exit codes
+
+- `0` – success.
+- `1` – generic failure (I/O issues, parse errors, etc.).
+- `2` – duplicate slugs detected. Fix conflicts, then rerun.
+
+CI pipelines can fail fast by treating non-zero exit codes as errors.
+
+## Troubleshooting
+
+- **No snippets found** – confirm the path and glob pattern are correct. Run with `--pattern "**/*.md"` to mirror the default.
+- **Duplicate slugs** – check the log output; offending files are listed. Override slugs in front matter or reorganize filenames.
+- **ESM/TypeScript projects** – invoke via `npx` or add an npm script: `"snippets:build": "mark-down build content/snippets"`.
+
+## Related packages
+
+- [Core runtime](../core/README.md) – consume generated manifests at runtime.
+- [Angular adapter](../angular/README.md) – use snippets inside Angular apps.
+- [React adapter](../react/README.md) – integrate with React, Next.js, or Remix.
+- [Example app](../../examples/basic/README.md) – see the CLI in action.
