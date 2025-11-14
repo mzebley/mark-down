@@ -3,7 +3,14 @@
   "compilerOptions": {
     "outDir": "dist",
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "baseUrl": ".",
+    "paths": {
+      "@mzebley/mark-down": ["../core/src/index.ts"],
+      "@mzebley/mark-down/angular": ["../core/src/angular/index.ts"],
+      "@mzebley/mark-down/browser": ["../core/src/browser.ts"],
+      "@mzebley/mark-down/slug": ["../core/src/slug.ts"]
+    }
   },
   "include": ["src/**/*"]
 }

@@ -1,6 +1,6 @@
 {
   "name": "@mzebley/mark-down-angular",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "mark↓ Angular Adapter",
   "type": "module",
   "main": "dist/index.cjs",
@@ -17,9 +17,14 @@
     "dompurify": "^3.0.9"
   },
   "peerDependencies": {
-    "@angular/common": "^17.0.0",
-    "@angular/core": "^17.0.0",
-    "@angular/platform-browser": "^17.0.0",
-    "rxjs": "^7.8.0"
+    "@angular/common": ">=17 <21",
+    "@angular/core": ">=17 <21",
+    "@angular/platform-browser": ">=17 <21",
+    "rxjs": ">=7.8.0 <8.0.0 || >=8.0.0 <9.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@angular/platform-browser": {
+      "optional": true
+    }
   }
 }

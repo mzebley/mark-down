@@ -32,20 +32,13 @@ describe("browser bundle", () => {
 
     const client = new SnippetClient({
       manifest,
-      fetcher: async () => ({
-        ok: true,
-        status: 200,
-        async text() {
-          return "---\ntitle: From Browser\n---\nHello from the browser bundle.";
-        }
-      }),
-      markdownRenderer: (markdown) => `<p>${markdown}</p>`
+      fetch: async () => "---\ntitle: From Browser\n---\nHello from the browser bundle."
     });
 
     const snippet = await client.get("browser-test");
 
-    expect(snippet?.title).toBe("From Browser");
-    expect(snippet?.html).toContain("<p>");
+    expect(snippet.title).toBe("From Browser");
+    expect(snippet.html).toContain("<p>");
     expect(globalThis.Buffer).toBeDefined();
     expect(Buffer.isBuffer(Buffer.from("test"))).toBe(true);
   });

@@ -10,7 +10,7 @@ import {
 } from "@angular/core";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { BehaviorSubject, Observable, of } from "rxjs";
-import { map, shareReplay, switchMap, tap } from "rxjs/operators";
+import { catchError, map, shareReplay, switchMap, tap } from "rxjs/operators";
 import type { Snippet } from "@mzebley/mark-down";
 import { SnippetService } from "./snippet.service";
 import DOMPurify from "dompurify";
@@ -37,10 +37,12 @@ export class SnippetViewComponent implements OnChanges {
   @Input() slug?: string;
   @Output() readonly loaded = new EventEmitter<Snippet | undefined>();
 
-  private readonly snippet$: Observable<Snippet | undefined> = this.slug$.pipe(
-    switchMap((slug) => (slug ? this.snippets.get(slug) : of(undefined))),
-    tap((snippet) => this.loaded.emit(snippet)),
-    shareReplay(1)
+  private readonly snippet$: Observable<Snippet | null> = this.slug$.pipe(
+    switchMap((slug) =>
+      slug ? this.snippets.get(slug).pipe(catchError(() => of(null))) : of(null)
+    ),
+    tap((snippet) => this.loaded.emit(snippet ?? undefined)),
+    shareReplay({ bufferSize: 1, refCount: true })
   );
 
   readonly content$: Observable<SafeHtml | null> = this.snippet$.pipe(
