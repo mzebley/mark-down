@@ -115,7 +115,7 @@ const hero = await client.get("getting-started-welcome");
 const components = await client.listByType("component");
 ```
 
-The client lazily fetches the manifest and snippets, re-parses front matter with `gray-matter`, converts Markdown to HTML via `marked`, and caches everything in memory. See the [core runtime guide](packages/core/README.md) for option reference and advanced patterns like custom fetchers.
+The client lazily fetches the manifest and snippets, parses YAML front matter with `yaml`, converts Markdown to HTML via `marked`, and caches everything in memory. See the [core runtime guide](packages/core/README.md) for option reference and advanced patterns like custom fetch functions or cache invalidation.
 
 ## Writing snippets
 
@@ -128,8 +128,8 @@ The client lazily fetches the manifest and snippets, re-parses front matter with
 
 The runtime ships as a portable TypeScript package. It supports modern browsers, Node.js, and SSR environments. Highlights:
 
-- `SnippetClient` – fetch individual snippets (`get`) and list them by filters (`list`, `listByGroup`, `listByType`, etc.) while hydrating cached results.
-- Pluggable fetch & render – inject a custom `fetcher` for SSR or a custom `markdownRenderer` if you prefer `remark`, `marked`, or another tool.
+- `SnippetClient` – fetch individual snippets (`get`) and filter them via `listAll`, `listByGroup`, `listByType`, and `search` while hydrating cached results.
+- Pluggable fetch & caching – inject a custom `fetch` implementation for SSR, control caching via `cache` and `invalidate()` APIs, and customise the Markdown renderer with the optional `render` hook.
 - Type-safe results – TypeScript definitions for `Snippet`, `SnippetMeta`, and filters ensure predictable metadata access.
 
 Visit the [core README](packages/core/README.md) for end-to-end examples and API details.
@@ -151,7 +151,7 @@ The bundle auto-installs the small `Buffer` shim required by the runtime, so no 
 
 ## Framework adapters
 
-- [Angular adapter](packages/angular/README.md) – Standalone provider, `SnippetService`, and `<snippet-view>` component that work seamlessly with Angular dependency injection.
+- [Angular adapter](packages/angular/README.md) – Standalone provider, `MarkdownSnippetService`, and `<snippet-view>` component that work seamlessly with Angular dependency injection across versions 17–20.
 - [React adapter](packages/react/README.md) – Context provider, hooks, and a `<SnippetView />` component powered by DOMPurify.
 
 Each adapter builds on the core runtime and adds ergonomics tailored to the framework (e.g., Observables for Angular and hooks for React). Their READMEs include installation notes, SSR tips, and extension points.
