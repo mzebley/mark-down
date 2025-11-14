@@ -30,26 +30,38 @@ Provide a shared `SnippetClient` from your root bootstrap call or feature module
 
 ```ts
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideMarkDown } from '@mzebley/mark-down-angular';
+import { provideSnippetClient } from '@mzebley/mark-down/angular';
 
 bootstrapApplication(AppComponent, {
   providers: [
-    ...provideMarkDown({
-      manifest: '/snippets-index.json',
+    ...provideSnippetClient({
+      manifest: '/assets/content/snippets/manifest.json',
+      base: '/assets/content/snippets',
     }),
   ],
 });
 ```
 
-`provideMarkDown` wires up the client as an Angular provider using the options you pass through. The manifest can be a URL, a factory, or a pre-fetched array—identical to the [core runtime options](../core/README.md#client-options).
+`provideSnippetClient` wires up the client as an Angular provider using the same options supported by the core runtime (`manifest`, `base`, `fetch`, `frontMatter`, `cache`, `verbose`). Prefer the scoped `@mzebley/mark-down/angular` entry point for tree-shaking and clearer typing. For backwards compatibility this package also re-exports `provideMarkDown`, `MARK_DOWN_CLIENT`, and the legacy `SnippetService` name.
+
+### Angular compatibility
+
+| Angular version | Status |
+| ---------------- | ------ |
+| 17.x             | ✅ Supported |
+| 18.x             | ✅ Supported |
+| 19.x             | ✅ Supported |
+| 20.x             | ✅ Supported |
+
+The package declares peer dependency ranges `>=17 <21` so projects running any currently supported Angular major release can install without `--legacy-peer-deps`.
 
 ## Consuming snippets
 
-Inject `SnippetService` into components or services to access Observables for snippets:
+Inject `MarkdownSnippetService` into components or services to access Observables for snippets:
 
 ```ts
 import { Component, inject } from '@angular/core';
-import { SnippetService } from '@mzebley/mark-down-angular';
+import { MarkdownSnippetService } from '@mzebley/mark-down/angular';
 
 @Component({
   selector: 'docs-hero',
@@ -61,12 +73,12 @@ import { SnippetService } from '@mzebley/mark-down-angular';
   `,
 })
 export class DocsHeroComponent {
-  private readonly snippets = inject(SnippetService);
+  private readonly snippets = inject(MarkdownSnippetService);
   readonly hero$ = this.snippets.get('getting-started-welcome');
 }
 ```
 
-The service mirrors the core client APIs (`get`, `list`, `listByType`, `listByGroup`) but returns cold Observables that share cached results across subscribers.
+The service mirrors the core client APIs (`get`, `listAll`, `listByType`, `listByGroup`, `search`) but returns cold Observables that share cached results across subscribers.
 
 ## `<snippet-view>` component
 
@@ -80,7 +92,7 @@ Features:
 
 - Uses Angular's `DomSanitizer` to render HTML safely.
 - Emits a `loaded` event once the snippet resolves so parent components can react.
-- Provides built-in "Loading snippet…" and "Snippet not found" fallbacks (customize by wrapping the component or using the service directly).
+- Provides a loading placeholder and gracefully emits `undefined` when the slug cannot be resolved.
 - Supports `class`/`ngClass` bindings for styling since it renders a standard `<div>`.
 
 ## Server-side rendering
@@ -90,18 +102,23 @@ When running in Angular Universal, supply a server-compatible fetch implementati
 ```ts
 import fetch from 'node-fetch';
 
-provideMarkDown({
+provideSnippetClient({
   manifest: () => import('../snippets-index.json'),
-  fetcher: (input, init) => fetch(input as string, init),
+  fetch: (url) => fetch(url).then((response) => {
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+    return response;
+  }),
 });
 ```
 
-The provider forwards all options to the underlying `SnippetClient`, so SSR and preloaded manifests work exactly like the core package.
+The provider forwards all options to the underlying `SnippetClient`, so SSR, custom cache policies, and preloaded manifests work exactly like the core package.
 
 ## Testing tips
 
-- Provide a mock manifest array during tests: `provideMarkDown({ manifest: mockManifest })`.
-- Use `SnippetService` with the Angular `TestBed` to assert filtering behaviour.
+- Provide a mock manifest array during tests: `provideSnippetClient({ manifest: mockManifest })`.
+- Use `MarkdownSnippetService` with the Angular `TestBed` to assert filtering behaviour.
 - Pair with the [example application](../../examples/basic/README.md) to see how snippets integrate with routing and feature modules.
 
 ## Roadmap

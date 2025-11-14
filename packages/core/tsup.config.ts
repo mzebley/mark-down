@@ -4,16 +4,18 @@ export default defineConfig([
   {
     entry: {
       index: "src/index.ts",
-      slug: "src/slug.ts"
+      slug: "src/slug.ts",
+      "angular/index": "src/angular/index.ts"
     },
-    format: ["esm", "cjs"],
+    format: ["esm"],
     dts: true,
     sourcemap: true,
     clean: true,
     target: "es2020",
-    outExtension({ format }) {
+    external: ["@angular/core", "@angular/common", "@angular/router", "@angular/platform-browser", "rxjs"],
+    outExtension() {
       return {
-        js: format === "cjs" ? ".cjs" : ".mjs"
+        js: ".js"
       };
     }
   },
