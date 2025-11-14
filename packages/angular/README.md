@@ -11,7 +11,8 @@ Angular bindings for the [mark↓ core runtime](../core/README.md). This package
 4. [`<snippet-view>` component](#snippet-view-component)
 5. [Server-side rendering](#server-side-rendering)
 6. [Testing tips](#testing-tips)
-7. [Related packages](#related-packages)
+7. [Roadmap](#roadmap)
+8. [Related packages](#related-packages)
 
 ## Installation
 
@@ -65,27 +66,22 @@ export class DocsHeroComponent {
 }
 ```
 
-The service exposes the same API surface as the core client (`get`, `list`, `listByType`, `listByTag`, etc.), but returns cold Observables that share cached results.
+The service mirrors the core client APIs (`get`, `list`, `listByType`, `listByGroup`) but returns cold Observables that share cached results across subscribers.
 
 ## `<snippet-view>` component
 
 Render snippets declaratively with the bundled standalone component:
 
 ```html
-<snippet-view
-  [slug]="'components-button'"
-  loading="Loading..."
-  error="Unable to load snippet"
-  (loaded)="onSnippetLoaded($event)">
-</snippet-view>
+<snippet-view [slug]="'components-button'" (loaded)="onSnippetLoaded($event)"></snippet-view>
 ```
 
 Features:
 
 - Uses Angular's `DomSanitizer` to render HTML safely.
-- Emits a `loaded` event once the snippet resolves.
-- Accepts `loading` and `error` inputs to customize fallback UI.
-- Supports `class`/`ngClass` bindings for styling.
+- Emits a `loaded` event once the snippet resolves so parent components can react.
+- Provides built-in "Loading snippet…" and "Snippet not found" fallbacks (customize by wrapping the component or using the service directly).
+- Supports `class`/`ngClass` bindings for styling since it renders a standard `<div>`.
 
 ## Server-side rendering
 
@@ -107,6 +103,13 @@ The provider forwards all options to the underlying `SnippetClient`, so SSR and 
 - Provide a mock manifest array during tests: `provideMarkDown({ manifest: mockManifest })`.
 - Use `SnippetService` with the Angular `TestBed` to assert filtering behaviour.
 - Pair with the [example application](../../examples/basic/README.md) to see how snippets integrate with routing and feature modules.
+
+## Roadmap
+
+- **Template primitives** – structural directives for rendering snippet lists via `*markDownSnippets`.
+- **AsyncPipe optimisations** – helpers that automatically unsubscribe / reuse cached Observables when using standalone components.
+- **Schematics** – Angular CLI generator for wiring `provideMarkDown` + `SnippetViewComponent`.
+- **SSR hydration helpers** – share manifest snapshots between server and browser to avoid double fetching.
 
 ## Related packages
 

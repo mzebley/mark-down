@@ -1,14 +1,15 @@
 {
   "name": "mark-down-monorepo",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "mark↓ monorepo containing core, CLI, Angular, and React adapters",
   "scripts": {
     "build": "npm run build -w @mzebley/mark-down && npm run build -w @mzebley/mark-down-cli && npm run build -w @mzebley/mark-down-angular && npm run build -w @mzebley/mark-down-react",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "release": "npm run test && npm run build && npm publish --workspaces"
   },
   "workspaces": [
     "packages/*",

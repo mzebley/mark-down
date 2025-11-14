@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@angular/core";
-import { from, map, Observable, shareReplay, switchMap } from "rxjs";
+import { from, map, Observable, shareReplay } from "rxjs";
 import type { ListOptions, Snippet, SnippetMeta } from "@mzebley/mark-down";
 import { SnippetClient } from "@mzebley/mark-down";
 import { MARK_DOWN_CLIENT } from "./token";

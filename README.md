@@ -3,8 +3,8 @@
 
 A framework-agnostic snippet engine that indexes Markdown at build time and renders HTML safely at runtime.
 
-- 👉 Looking for the package docs? Jump directly to the [Core runtime](packages/core/README.md), [CLI](packages/cli/README.md), [Angular adapter](packages/angular/README.md), or [React adapter](packages/react/README.md).
-- 👉 Want to poke around an end-to-end example? See [`examples/basic`](examples/basic/README.md).
+- Looking for the package docs? Jump directly to the [Core runtime](packages/core/README.md), [CLI](packages/cli/README.md), [Angular adapter](packages/angular/README.md), or [React adapter](packages/react/README.md).
+- Want to poke around an end-to-end example? See [`examples/basic`](examples/basic/README.md).
 
 ## Table of contents
 
@@ -16,7 +16,8 @@ A framework-agnostic snippet engine that indexes Markdown at build time and rend
 6. [Using the runtime](#using-the-runtime)
 7. [Framework adapters](#framework-adapters)
 8. [Workspace scripts](#workspace-scripts)
-9. [Further reading](#further-reading)
+9. [Roadmap](#roadmap)
+10. [Further reading](#further-reading)
 
 ## Overview
 
@@ -127,11 +128,26 @@ The client lazily fetches the manifest and snippets, re-parses front matter with
 
 The runtime ships as a portable TypeScript package. It supports modern browsers, Node.js, and SSR environments. Highlights:
 
-- `SnippetClient` – fetch individual snippets (`get`), list by filters (`list`, `listByTag`, `listByType`, etc.), and hydrate cached results.
+- `SnippetClient` – fetch individual snippets (`get`) and list them by filters (`list`, `listByGroup`, `listByType`, etc.) while hydrating cached results.
 - Pluggable fetch & render – inject a custom `fetcher` for SSR or a custom `markdownRenderer` if you prefer `remark`, `marked`, or another tool.
 - Type-safe results – TypeScript definitions for `Snippet`, `SnippetMeta`, and filters ensure predictable metadata access.
 
 Visit the [core README](packages/core/README.md) for end-to-end examples and API details.
+
+### Static sites / CDN usage
+
+Need to include mark↓ inside a plain HTML page with no build step? Use the browser-ready bundle:
+
+```html
+<script type="module">
+  import { SnippetClient } from "https://cdn.jsdelivr.net/npm/@mzebley/mark-down/dist/browser.js";
+  const client = new SnippetClient({ manifest: "./snippets-index.json" });
+  const snippet = await client.get("home-hero");
+  document.querySelector("#hero").innerHTML = snippet.html;
+</script>
+```
+
+The bundle auto-installs the small `Buffer` shim required by the runtime, so no additional polyfills are necessary.
 
 ## Framework adapters
 
@@ -146,8 +162,21 @@ Each adapter builds on the core runtime and adds ergonomics tailored to the fram
 - `npm run test` – runs Vitest suites covering slug rules, CLI manifest logic, and runtime behaviour.
 - `npm run test:watch` – runs tests in watch mode during local development.
 - `npm run lint` / `npm run format` – optional linting and formatting helpers.
+- `npm run release` – runs tests, builds every package, and publishes all workspaces to npm (requires `npm login`).
 
 Run scripts from the repository root; npm scopes the command to each workspace automatically.
+
+## Roadmap
+
+The first release focuses on the core workflow (author → build → render). Upcoming ideas under consideration:
+
+- **Preview server + hot reload** – stream snippet updates to dev servers so component libraries can refresh in-place.
+- **Schema-aware metadata** – allow teams to define JSON schemas for front-matter and validate during `mark-down build`.
+- **MDX / remark pipelines** – optional processors that can enrich Markdown before it lands in the manifest.
+- **More adapters** – Vue, Svelte, and Web Components bindings built on top of the same core runtime.
+- **Editor tooling** – VS Code extension / design system workbench that queries `snippets-index.json`.
+
+Have a use case to prioritise? File a feature request or open a discussion in the repo.
 
 ## Further reading
 

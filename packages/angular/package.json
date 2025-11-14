@@ -1,11 +1,14 @@
 {
   "name": "@mzebley/mark-down-angular",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "mark↓ Angular Adapter",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsup src/index.ts --dts --format esm,cjs"
   },

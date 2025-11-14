@@ -12,7 +12,8 @@
 5. [Watching for changes](#watching-for-changes)
 6. [Exit codes](#exit-codes)
 7. [Troubleshooting](#troubleshooting)
-8. [Related packages](#related-packages)
+8. [Roadmap](#roadmap)
+9. [Related packages](#related-packages)
 
 ## Installation
 
@@ -54,16 +55,11 @@ The CLI walks the directory tree, gathers front matter, and writes `snippets-ind
 
 ## Configuration options
 
-Pass flags after the command:
+The CLI stays intentionally small so it can be composed inside any toolchain. Currently supported flags:
 
-| Flag | Description |
-| --- | --- |
-| `--outDir <path>` | Write the manifest to a different folder (defaults to the source directory). |
-| `--pattern <glob>` | Custom glob for snippet discovery. Defaults to `**/*.md`. |
-| `--quiet` | Suppress non-error logging. |
-| `--drafts` | Include entries marked `draft: true` in front matter (disabled by default). |
+- `-o, --output <path>` – write the manifest to a custom file instead of `<sourceDir>/snippets-index.json`.
 
-Options can also be stored in npm scripts inside your application `package.json`.
+Add flags directly after the command (`mark-down build content/snippets -o public/snippets-index.json`). Package scripts can capture these options as well.
 
 ## Watching for changes
 
@@ -85,9 +81,18 @@ CI pipelines can fail fast by treating non-zero exit codes as errors.
 
 ## Troubleshooting
 
-- **No snippets found** – confirm the path and glob pattern are correct. Run with `--pattern "**/*.md"` to mirror the default.
+- **No snippets found** – confirm the path is correct and that files end with `.md`. The CLI always uses the recursive `**/*.md` pattern.
 - **Duplicate slugs** – check the log output; offending files are listed. Override slugs in front matter or reorganize filenames.
 - **ESM/TypeScript projects** – invoke via `npx` or add an npm script: `"snippets:build": "mark-down build content/snippets"`.
+
+## Roadmap
+
+- **Additional flags** – support opt-in draft inclusion, custom glob patterns, and alternative output formats.
+- **Manifest plugins** – allow teams to run transforms (MDX, remark, syntax highlighting) before JSON is written.
+- **Watch dashboard** – provide a TUI/HTML preview server so content teams can inspect snippets while writing.
+- **Parallel builds** – shard large repositories across worker pools for faster CI times.
+
+Open an issue if one of these would unlock your workflow.
 
 ## Related packages
 

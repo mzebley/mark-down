@@ -1,6 +1,6 @@
 {
   "name": "@mzebley/mark-down-cli",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "mark↓ CLI for building snippet manifests",
   "type": "module",
   "bin": {
@@ -9,6 +9,9 @@
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "dev": "tsup src/index.ts --watch"

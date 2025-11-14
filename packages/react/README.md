@@ -7,11 +7,12 @@ React bindings for the [mark↓ core runtime](../core/README.md). This package e
 
 1. [Installation](#installation)
 2. [Provider setup](#provider-setup)
-3. [Hooks](#hooks)
+3. [Hook](#hook)
 4. [`<SnippetView />` component](#snippetview--component)
 5. [Server-side rendering](#server-side-rendering)
 6. [TypeScript helpers](#typescript-helpers)
-7. [Related packages](#related-packages)
+7. [Roadmap](#roadmap)
+8. [Related packages](#related-packages)
 
 ## Installation
 
@@ -41,7 +42,7 @@ export function App({ children }: { children: React.ReactNode }) {
 
 `options` maps directly to the [`SnippetClient` configuration](../core/README.md#client-options), so you can provide custom fetchers, renderers, or manifest loaders as needed.
 
-## Hooks
+## Hook
 
 ### `useSnippet(slug)`
 
@@ -61,27 +62,6 @@ export function Hero() {
 }
 ```
 
-### `useSnippets(filter)`
-
-List snippets by type, tags, or custom metadata:
-
-```tsx
-import { useSnippets } from '@mzebley/mark-down-react';
-
-export function ComponentList() {
-  const { snippets } = useSnippets({ type: 'component', tags: ['buttons'] });
-  return (
-    <ul>
-      {snippets.map((snippet) => (
-        <li key={snippet.slug}>{snippet.title}</li>
-      ))}
-    </ul>
-  );
-}
-```
-
-All hooks automatically dedupe requests and reuse cached results.
-
 ## `<SnippetView />` component
 
 Render snippets declaratively with built-in loading and error fallbacks:
@@ -100,8 +80,8 @@ import { SnippetView } from '@mzebley/mark-down-react';
 Features:
 
 - Uses DOMPurify under the hood for HTML sanitisation.
-- Accepts `className`, `style`, and other DOM props for styling.
-- Supports `renderSnippet` for full control over rendering if you prefer not to use `dangerouslySetInnerHTML`.
+- Accepts `className` for styling and emits `onLoaded(snippet)` once HTML resolves.
+- Customise UX via `loadingFallback` / `errorFallback`, or render the hook directly for complete control.
 
 ## Server-side rendering
 
@@ -130,6 +110,13 @@ All exported hooks and components ship with rich TypeScript definitions:
 - Use the `Snippet` and `SnippetMeta` types from `@mzebley/mark-down` to annotate props.
 - Narrow snippet metadata with generics: `useSnippet<CustomExtra>('slug')`.
 - Leverage the `SnippetContextValue` interface when mocking providers in tests.
+
+## Roadmap
+
+- **Collection hooks** – add `useSnippets` for list queries and pagination helpers for design system docs.
+- **Suspense support** – optional wrappers that expose a resource-style API for React 18 concurrent features.
+- **Custom sanitizers** – let consumers inject DOMPurify configs or alternate HTML sanitizers.
+- **Storybook plugin** – surface snippets inside Storybook/Chromatic panels for quick previews.
 
 ## Related packages
 
