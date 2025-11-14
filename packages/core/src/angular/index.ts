@@ -43,3 +43,5 @@ export class MarkdownSnippetService {
     return this.get(slug).pipe(map((snippet) => snippet.html));
   }
 }
+
+export type { Snippet, SnippetClientOptions, SnippetMeta } from "../types";
