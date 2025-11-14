@@ -13,6 +13,7 @@ export interface SnippetMeta {
 export interface Snippet extends SnippetMeta {
   html: string;
   raw?: string;
+  markdown?: string;
 }
 
 export interface SnippetSearchFilter {

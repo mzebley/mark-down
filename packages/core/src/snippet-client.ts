@@ -247,7 +247,7 @@ export class SnippetClient {
       }
     }
 
-    const snippet: Snippet = { ...merged, html, raw: body };
+    const snippet: Snippet = { ...merged, html, raw: body, markdown: body };
     if (merged.tags) {
       snippet.tags = [...merged.tags];
     }
@@ -255,11 +255,19 @@ export class SnippetClient {
   }
 
   private resolveSnippetPath(path: string): string {
-    if (HTTP_PATTERN.test(path) || path.startsWith("/")) {
+    if (HTTP_PATTERN.test(path)) {
       return normalizeForwardSlashes(path);
     }
 
     const base = this.options.base ?? this.inferredBase ?? "";
+
+    if (path.startsWith("/")) {
+      if (base) {
+        return joinPaths(base, path);
+      }
+      return normalizeForwardSlashes(path);
+    }
+
     if (base) {
       return joinPaths(base, path);
     }
