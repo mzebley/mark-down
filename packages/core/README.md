@@ -9,7 +9,7 @@ This package provides the framework-agnostic `SnippetClient` and supporting type
 2. [Quick start](#quick-start)
 3. [Client options](#client-options)
 4. [Working with snippets](#working-with-snippets)
-5. [SSR and custom fetchers](#ssr-and-custom-fetchers)
+5. [SSR and custom fetch functions](#ssr-and-custom-fetch-functions)
 6. [Static sites / CDN usage](#static-sites--cdn-usage)
 7. [Testing & type safety](#testing--type-safety)
 8. [Related packages](#related-packages)
@@ -37,7 +37,7 @@ const client = new SnippetClient({
 const hero = await client.get("getting-started-welcome");
 const components = await client.listByType("component");
 
-console.log(hero?.title);
+console.log(hero.title);
 ```
 
 The client lazily loads the manifest when first needed, then fetches Markdown files on demand. Results are cached for the lifetime of the client instance.
@@ -46,25 +46,30 @@ The client lazily loads the manifest when first needed, then fetches Markdown fi
 
 `SnippetClient` accepts a single configuration object:
 
-- **`manifest`** (`string | ManifestEntry[] | () => Promise<ManifestEntry[]>`) – where to load the manifest. Pass a URL (default), an in-memory array, or an async factory for advanced scenarios.
-- **`fetcher`** (`(input, init) => Promise<Response>`) – provide a custom fetch implementation. Useful for SSR environments or when using libraries like Axios.
-- **`markdownRenderer`** – a `(markdown: string) => string | Promise<string>` function. Override to swap the default `marked` renderer for something like `remark` or a bespoke pipeline.
-- **`resolveSnippetPath`** – map manifest entries to final URLs. Override when static assets live in a CDN or custom folder.
+- **`manifest`** (`string | SnippetMeta[] | () => Promise<SnippetMeta[]>`) – where to load the manifest. Provide a URL, an in-memory array, or an async factory.
+- **`base`** (`string`) – optional base path prepended to relative snippet paths. The client infers the directory from the manifest URL when omitted.
+- **`fetch`** (`(url: string) => Promise<Response | string>`) – inject a custom fetch implementation. Use this for SSR, testing, or advanced caching.
+- **`frontMatter`** (`boolean`, default `true`) – toggle YAML front-matter parsing.
+- **`cache`** (`boolean`, default `true`) – enable or disable per-snippet and manifest memoisation.
+- **`verbose`** (`boolean`) – log helpful warnings (for example, slug mismatches) during development.
+- **`render`** (`(markdown: string) => string | Promise<string>`) – override the default `marked` renderer when you need custom HTML output.
 
-All options are optional except `manifest`.
+All options are optional except `manifest`. Results are rendered with `marked` by default; override at the application level if you need a different Markdown pipeline.
 
 ## Working with snippets
 
 Commonly used APIs:
 
-- `client.get(slug)` – fetch a single snippet. Returns `Promise<Snippet | undefined>`.
-- `client.list(filterOrOptions)` – list snippets using predicates, offsets, and limits.
-- `client.listByType(type, options?)` – filter by `type`.
-- `client.listByGroup(group, options?)` – filter based on the folder-derived `group`.
+- `client.get(slug)` – fetch a single snippet. Throws `SnippetNotFoundError` if the manifest does not include the slug.
+- `client.listAll()` – return a copy of every manifest entry.
+- `client.listByType(type)` / `client.listByGroup(group)` – targeted manifest filters.
+- `client.search({ type, group, tags, tagsMode })` – multi-field search helper with tag matching.
+- `client.getHtml(slug)` – convenience wrapper that resolves directly to HTML.
+- `client.invalidate()` / `client.invalidateSlug(slug)` – clear caches to force refetching.
 
-Metadata is preserved exactly as declared in front matter. Standard keys (`slug`, `title`, etc.) are copied onto `SnippetMeta` and everything else is available through the `extra` bag so you can access custom fields like `snippet.extra.ctaLabel`.
+Metadata is preserved exactly as declared in front matter. Standard keys (`slug`, `title`, etc.) are copied onto `SnippetMeta`, additional properties live inside `extra`, and the resolved `Snippet` includes both rendered HTML and an optional `raw` Markdown string (without front matter) for advanced use cases.
 
-## SSR and custom fetchers
+## SSR and custom fetch functions
 
 The runtime runs in browsers, Node.js, or edge runtimes. For server-side rendering:
 
@@ -74,11 +79,16 @@ import { SnippetClient } from "@mzebley/mark-down";
 
 const client = new SnippetClient({
   manifest: () => import("./snippets-index.json"),
-  fetcher: (input, init) => fetch(input as string, init),
+  fetch: (url) => fetch(url).then((response) => {
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+    return response;
+  }),
 });
 ```
 
-You can also pre-seed snippets by passing an array to `manifest` to avoid network requests entirely.
+You can also pre-seed snippets by passing an array to `manifest` to avoid network requests entirely. When `cache` is disabled the client re-fetches both manifest and snippet payloads on every request.
 
 ## Static sites / CDN usage
 
@@ -99,7 +109,7 @@ As long as you host `snippets-index.json` (generated by the CLI) alongside your 
 ## Testing & type safety
 
 - Use `SnippetMeta` and `Snippet` TypeScript types to describe props and state in your application.
-- Mock the client by providing a manifest array or by stubbing the `fetcher` function.
+- Mock the client by providing a manifest array or by stubbing the `fetch` option.
 - Run the workspace tests with `npm run test -- core` to exercise Vitest suites that cover caching, filtering, and Markdown conversion.
 
 ## Related packages

@@ -1,10 +1,8 @@
 {
   "name": "@mzebley/mark-down",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "mark↓ core runtime and shared utilities",
   "type": "module",
-  "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "publishConfig": {
     "access": "public"
@@ -12,17 +10,19 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "import": "./dist/index.js"
     },
     "./slug": {
       "types": "./dist/slug.d.ts",
-      "import": "./dist/slug.mjs",
-      "require": "./dist/slug.cjs"
+      "import": "./dist/slug.js"
     },
     "./browser": {
       "types": "./dist/browser.d.ts",
       "import": "./dist/browser.js"
+    },
+    "./angular": {
+      "types": "./dist/angular/index.d.ts",
+      "import": "./dist/angular/index.js"
     }
   },
   "scripts": {
@@ -30,7 +30,8 @@
     "dev": "tsup --config tsup.config.ts --watch"
   },
   "dependencies": {
-    "gray-matter": "^4.0.3",
-    "marked": "^11.1.0"
-  }
+    "marked": "^11.1.0",
+    "yaml": "^2.4.1"
+  },
+  "sideEffects": false
 }

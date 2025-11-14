@@ -40,7 +40,7 @@ export function App({ children }: { children: React.ReactNode }) {
 }
 ```
 
-`options` maps directly to the [`SnippetClient` configuration](../core/README.md#client-options), so you can provide custom fetchers, renderers, or manifest loaders as needed.
+`options` maps directly to the [`SnippetClient` configuration](../core/README.md#client-options), so you can provide custom fetch functions, base paths, or preloaded manifest arrays as needed.
 
 ## Hook
 
@@ -94,7 +94,12 @@ import { SnippetProvider } from '@mzebley/mark-down-react';
 <SnippetProvider
   options={{
     manifest: () => import('../snippets-index.json'),
-    fetcher: (input, init) => fetch(input as string, init),
+    fetch: (url) => fetch(url).then((response) => {
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+      return response;
+    }),
   }}
 >
   {children}

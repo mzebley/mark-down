@@ -1,16 +1,14 @@
-import { InjectionToken, Provider } from "@angular/core";
-import { SnippetClient, type SnippetClientOptions } from "@mzebley/mark-down";
+import type { Provider } from "@angular/core";
+import {
+  SNIPPET_CLIENT,
+  SNIPPET_CLIENT_OPTIONS,
+  provideSnippetClient,
+  type SnippetClientOptions
+} from "@mzebley/mark-down/angular";
 
-export const MARK_DOWN_CLIENT = new InjectionToken<SnippetClient>("mark-down-client");
-export const MARK_DOWN_OPTIONS = new InjectionToken<SnippetClientOptions>("mark-down-options");
+export const MARK_DOWN_CLIENT = SNIPPET_CLIENT;
+export const MARK_DOWN_OPTIONS = SNIPPET_CLIENT_OPTIONS;
 
-export function provideMarkDown(options: SnippetClientOptions, client?: SnippetClient): Provider[] {
-  return [
-    { provide: MARK_DOWN_OPTIONS, useValue: options },
-    {
-      provide: MARK_DOWN_CLIENT,
-      useFactory: (opts: SnippetClientOptions) => client ?? new SnippetClient(opts),
-      deps: [MARK_DOWN_OPTIONS]
-    }
-  ];
+export function provideMarkDown(options: SnippetClientOptions): Provider[] {
+  return provideSnippetClient(options);
 }
