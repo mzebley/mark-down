@@ -6,9 +6,10 @@
   --card-bg: hsl(271, 81%, 99%);
   --terminal-bg: #1f2933;
   --terminal-fg: hsl(44, 28%, 82%);
-  --footer-bg: var(--card-bg);
+  --footer-bg: hsl(44, 61%, 82%);;
   --footer-fg: var(--fg);
   --focus: #FF55AA;
+  --card-shadow: rgba(0, 0, 0, 0.16) 0px 2px 4px 0px inset;
 }
 
 
@@ -40,6 +41,7 @@ body {
     --footer-bg: var(--card-bg);
     --footer-fg: var(--muted);
     --focus: #66FFCC;
+    --card-shadow: none;
   }
 
 }
@@ -181,18 +183,6 @@ img {
   position: relative;
 }
 
-.flow::before {
-  content: "";
-  position: absolute;
-  left: calc(50% - .125rem);
-  top: 12px;
-  bottom: 12px;
-  width: .25rem;
-  background: linear-gradient(180deg, transparent, var(--muted), transparent);
-  pointer-events: none;
-  opacity: 0.4;
-}
-
 .card {
   background: var(--card-bg);
   border: .5rem solid var(--bg);
@@ -202,6 +192,22 @@ img {
   z-index: 1;
   max-width: 36rem;
   width: 100%;
+  box-shadow: var(--card-shadow);
+  &:before {
+    content: "↓";
+    position: absolute;
+    color: var(--muted);
+    top: -5rem;
+    left: calc(50% - .125rem);
+    width: .225rem;
+    text-align:center;
+    font-size:4rem;
+    opacity:.66;
+    font-family: "Special Gothic Condensed One", "Puritan", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  &:first-of-type:before {
+    display:none;
+  }
 }
 
 .card__label {
@@ -309,7 +315,7 @@ pre {
 }
 
 dynamo-wave {
-  fill: var(--card-bg);
+  fill: var(--footer-bg);
   width: 100%;
 
   svg {

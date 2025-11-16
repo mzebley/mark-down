@@ -12,7 +12,8 @@
     href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Puritan:ital,wght@0,400;0,700;1,400;1,700&family=Special+Gothic+Condensed+One&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
-  <script src="https://cdn.jsdelivr.net/gh/mzebley/dynamowaves/dist/dynamowaves.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/gh/mzebley/dynamowaves/dist/dynamowaves.min.js"
+    crossorigin="anonymous"></script>
   <script src="script.js" type="module"></script>
 
 </head>
@@ -61,8 +62,9 @@
           Render it anywhere.
         </p>
       </div>
-      <svg tabindex="0" onclick="scrollToTeaser()" xmlns="http://www.w3.org/2000/svg" role="button" aria-label="Scroll to content" viewBox="180.65 2.595 73.176 114.991"
-        class="scroll-indicator" id="scroll_indicator">
+      <svg tabindex="0" onclick="scrollToTeaser()" xmlns="http://www.w3.org/2000/svg" role="button"
+        aria-label="Scroll to content" viewBox="180.65 2.595 73.176 114.991" class="scroll-indicator"
+        id="scroll_indicator">
         <path
           d="M 191.778 69.87 L 208.639 88.754 L 208.639 2.595 L 225.837 2.595 L 225.837 88.754 L 242.698 69.87 L 253.826 80.998 L 217.238 117.586 L 180.65 80.998 L 191.778 69.87 Z">
         </path>
@@ -99,11 +101,16 @@ Some copy in **Markdown**.
 </code></pre>
       </div>
       <div class="card">
+        <p class="card__label">Written HTML</p>
+        <pre><code>&lt;div data-snippet="getting-started"&gt;&lt;/div&gt;
+</code></pre>
+      </div>
+      <div class="card">
         <p class="card__label">Rendered HTML</p>
-        <pre><code>&lt;article&gt;
+        <pre><code>&lt;div&gt;
   &lt;h1&gt;Getting started&lt;/h1&gt;
   &lt;p&gt;Some copy in &lt;strong&gt;Markdown&lt;/strong&gt;.&lt;/p&gt;
-&lt;/article&gt;
+&lt;/div&gt;
 </code></pre>
       </div>
     </section>
@@ -118,15 +125,33 @@ Some copy in **Markdown**.
         <code>npm i @mzebley/mark-down</code>
       </div>
       <div class="terminal__actions">
-        <a class="btn primary" href="https://github.com/mzebley/mark-down" target="_blank">View on GitHub <span class="sr-only">opens in new tab</span> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon" role="img" aria-hidden="true"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" /><path d="M11 13l9 -9" /><path d="M15 4h5v5" /></svg></a>
-        <a class="btn ghost" href="https://www.npmjs.com/package/@mzebley/mark-down" target="_blank">View on npm <span class="sr-only">opens in new tab</span> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" role="img" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" /><path d="M11 13l9 -9" /><path d="M15 4h5v5" /></svg></a>
+        <a class="btn primary" href="https://github.com/mzebley/mark-down" target="_blank">View on GitHub <span
+            class="sr-only">opens in new tab</span> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" class="icon" role="img" aria-hidden="true">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
+            <path d="M11 13l9 -9" />
+            <path d="M15 4h5v5" />
+          </svg></a>
+        <a class="btn ghost" href="https://www.npmjs.com/package/@mzebley/mark-down" target="_blank">View on npm <span
+            class="sr-only">opens in new tab</span> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            role="img" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" class="icon">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
+            <path d="M11 13l9 -9" />
+            <path d="M15 4h5v5" />
+          </svg></a>
       </div>
     </section>
   </main>
-<dynamo-wave data-wave-animate="true"></dynamo-wave>
+  <dynamo-wave data-wave-animate="true"></dynamo-wave>
   <footer class="footer">
     <p>Open-source · MIT License</p>
-<a href="https://markzebley.com" aria-label="External link to markzebley.com homepage" target="_blank"><svg version="1.0" viewBox="0 0 598.000000 598.000000" preserveAspectRatio="xMidYMid meet" fill="var(--theme)" xmlns="http://www.w3.org/2000/svg">
+    <a href="https://markzebley.com" aria-label="External link to markzebley.com homepage" target="_blank"><svg
+        version="1.0" viewBox="0 0 598.000000 598.000000" preserveAspectRatio="xMidYMid meet" fill="var(--theme)"
+        xmlns="http://www.w3.org/2000/svg">
         <g transform="translate(0.000000,598.000000) scale(0.100000,-0.100000)" fill="inherit" stroke="none">
           <path d="M4790 5795 c-19 -9 -44 -24 -55 -34 -23 -22 -155 -109 -251 -166 -59
     -36 -273 -180 -299 -202 -5 -4 -44 -33 -85 -63 -41 -30 -77 -57 -80 -60 -3 -3
