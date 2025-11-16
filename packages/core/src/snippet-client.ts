@@ -1,6 +1,7 @@
-import { marked } from "marked";
-import { parse as parseYaml } from "yaml";
 import { normalizeSlug } from "./slug";
+import { parseFrontMatter } from "./front-matter";
+import { renderMarkdown } from "./markdown";
+import { ManifestLoadError, SnippetNotFoundError } from "./errors";
 import type {
   ManifestSource,
   ResponseLike,
@@ -11,32 +12,7 @@ import type {
   SnippetSearchFilter
 } from "./types";
 
-export class SnippetNotFoundError extends Error {
-  readonly slug: string;
-
-  constructor(slug: string) {
-    super(`Snippet with slug '${slug}' was not found in the manifest.`);
-    this.name = "SnippetNotFoundError";
-    this.slug = slug;
-  }
-}
-
-export class ManifestLoadError extends Error {
-  readonly cause?: unknown;
-
-  constructor(message: string, cause?: unknown) {
-    super(message);
-    this.name = "ManifestLoadError";
-    this.cause = cause instanceof Error ? cause : cause ? new Error(String(cause)) : undefined;
-  }
-}
-
-interface FrontMatterResult {
-  content: string;
-  meta: Partial<SnippetMeta>;
-  extra: Record<string, unknown>;
-  slug?: string;
-}
+export { ManifestLoadError, SnippetNotFoundError } from "./errors";
 
 interface SnippetClientInternalOptions {
   manifest: ManifestSource;
@@ -48,7 +24,6 @@ interface SnippetClientInternalOptions {
   render: (markdown: string) => Promise<string>;
 }
 
-const FRONT_MATTER_PATTERN = /^---\s*\n([\s\S]*?)\n---\s*\n?/;
 const HTTP_PATTERN = /^https?:\/\//i;
 
 export class SnippetClient {
@@ -73,7 +48,7 @@ export class SnippetClient {
 
     const renderer = renderOption
       ? async (markdown: string) => Promise.resolve(renderOption(markdown))
-      : async (markdown: string) => Promise.resolve(marked.parse(markdown));
+      : async (markdown: string) => Promise.resolve(renderMarkdown(markdown));
 
     this.options = {
       manifest: options.manifest,
@@ -311,99 +286,6 @@ function normalizeManifestEntry(entry: SnippetMeta): SnippetMeta {
   return normalized;
 }
 
-function parseFrontMatter(raw: string): FrontMatterResult {
-  const match = FRONT_MATTER_PATTERN.exec(raw);
-  if (!match) {
-    return { content: raw, meta: {}, extra: {} };
-  }
-
-  const yamlSection = match[1];
-  let data: unknown;
-  try {
-    data = parseYaml(yamlSection) ?? {};
-  } catch (error) {
-    throw new ManifestLoadError("Failed to parse snippet front-matter.", error);
-  }
-
-  if (!isRecord(data)) {
-    return { content: raw.slice(match[0].length), meta: {}, extra: {} };
-  }
-
-  const { known, extra } = splitFrontMatter(data);
-
-  return {
-    content: raw.slice(match[0].length),
-    meta: known.meta,
-    extra,
-    slug: known.slug
-  };
-}
-
-function splitFrontMatter(
-  data: Record<string, unknown>
-): { known: { meta: Partial<SnippetMeta>; slug?: string }; extra: Record<string, unknown> } {
-  const meta: Partial<SnippetMeta> = {};
-  const extra: Record<string, unknown> = {};
-  let slug: string | undefined;
-
-  for (const [key, value] of Object.entries(data)) {
-    switch (key) {
-      case "slug":
-        slug = typeof value === "string" ? value : undefined;
-        break;
-      case "title":
-        if (typeof value === "string") {
-          meta.title = value;
-        }
-        break;
-      case "type":
-        if (typeof value === "string") {
-          meta.type = value;
-        }
-        break;
-      case "order":
-        if (typeof value === "number") {
-          meta.order = value;
-        }
-        break;
-      case "tags":
-        meta.tags = normalizeTags(value);
-        break;
-      case "group":
-        if (typeof value === "string" || value === null) {
-          meta.group = value;
-        }
-        break;
-      case "draft":
-        if (typeof value === "boolean") {
-          meta.draft = value;
-        }
-        break;
-      default:
-        extra[key] = value;
-        break;
-    }
-  }
-
-  return { known: { meta, slug }, extra };
-}
-
-function normalizeTags(value: unknown): string[] | undefined {
-  if (!value) {
-    return undefined;
-  }
-  if (Array.isArray(value)) {
-    return value.map((item) => String(item));
-  }
-  if (typeof value === "string") {
-    return value
-      .split(",")
-      .map((tag) => tag.trim())
-      .filter(Boolean);
-  }
-  return undefined;
-}
-
 function deriveBaseFromManifest(manifest: string): string | undefined {
   if (HTTP_PATTERN.test(manifest)) {
     try {
@@ -483,10 +365,6 @@ function cloneMeta(meta: SnippetMeta): SnippetMeta {
     tags: meta.tags ? [...meta.tags] : undefined,
     extra: cloneRecord(meta.extra)
   };
-}
-
-function isRecord(candidate: unknown): candidate is Record<string, unknown> {
-  return Boolean(candidate) && typeof candidate === "object" && !Array.isArray(candidate);
 }
 
 async function defaultFetch(url: string): Promise<SnippetFetcherResult> {

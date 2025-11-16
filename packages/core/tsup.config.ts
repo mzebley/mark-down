@@ -5,6 +5,7 @@ export default defineConfig([
     entry: {
       index: "src/index.ts",
       slug: "src/slug.ts",
+      inline: "src/inline.ts",
       "angular/index": "src/angular/index.ts"
     },
     format: ["esm"],
@@ -33,6 +34,25 @@ export default defineConfig([
     outExtension() {
       return {
         js: ".js"
+      };
+    }
+  },
+  {
+    entry: {
+      "mark-down-inline": "src/inline.ts"
+    },
+    format: ["iife"],
+    globalName: "markDownInline",
+    dts: false,
+    sourcemap: true,
+    clean: false,
+    platform: "browser",
+    minify: false,
+    target: "es2018",
+    splitting: false,
+    outExtension() {
+      return {
+        js: ".umd.js"
       };
     }
   }
