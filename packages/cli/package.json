@@ -1,23 +1,23 @@
 {
   "name": "@mzebley/mark-down-cli",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "mark↓ CLI for building snippet manifests",
   "type": "module",
   "bin": {
-    "mark-down": "dist/index.cjs"
+    "mark-down": "dist/index.mjs"
   },
-  "main": "dist/index.cjs",
+  "main": "dist/index.mjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts",
-    "dev": "tsup src/index.ts --watch"
+    "build": "tsup --config tsup.config.ts",
+    "dev": "tsup --config tsup.config.ts --watch"
   },
   "dependencies": {
-    "@mzebley/mark-down": "file:../core",
+    "@mzebley/mark-down": "^1.2.1",
     "cheerio": "^1.0.0",
     "chokidar": "^3.6.0",
     "commander": "^11.1.0",

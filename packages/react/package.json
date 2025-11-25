@@ -1,6 +1,6 @@
 {
   "name": "@mzebley/mark-down-react",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "mark↓ React Adapter",
   "type": "module",
   "main": "dist/index.cjs",
@@ -13,7 +13,7 @@
     "build": "tsup src/index.ts --dts --format esm,cjs"
   },
   "dependencies": {
-    "@mzebley/mark-down": "file:../core",
+    "@mzebley/mark-down": "^1.2.1",
     "dompurify": "^3.0.5"
   },
   "peerDependencies": {
