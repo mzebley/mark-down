@@ -119,4 +119,63 @@ describe("compilePage", () => {
     const html = await fs.readFile(path.join(dir, "page.html"), "utf8");
     expect(html).toContain('<p>Alpha</p>');
   });
+
+  it("preserves doctype in output", async () => {
+    const dir = await setupFiles({
+      "snippets-index.json": JSON.stringify([{ slug: "alpha", path: "alpha.md" }]),
+      "alpha.md": `Content`,
+      "index.html": `<!doctype html>
+<html>
+  <body>
+    <div data-snippet="alpha"></div>
+  </body>
+</html>`
+    });
+
+    const outputDir = path.join(dir, "out");
+    const outputPath = await compilePage(path.join(dir, "index.html"), {
+      manifest: path.join(dir, "snippets-index.json"),
+      outDir: outputDir
+    });
+
+    const html = await fs.readFile(outputPath, "utf8");
+    expect(html.toLowerCase().startsWith("<!doctype html>")).toBe(true);
+    expect(html).toContain("<p>Content</p>");
+  });
+
+  it("uses snippet-<slug> as id when no front matter slug is present", async () => {
+    const dir = await setupFiles({
+      "snippets-index.json": JSON.stringify([{ slug: "alpha", path: "alpha.md" }]),
+      "alpha.md": `Alpha`,
+      "index.html": `<div data-snippet="alpha"></div>`
+    });
+
+    const outputDir = path.join(dir, "out");
+    const outputPath = await compilePage(path.join(dir, "index.html"), {
+      manifest: path.join(dir, "snippets-index.json"),
+      outDir: outputDir
+    });
+
+    const html = await fs.readFile(outputPath, "utf8");
+    expect(html).toMatch(/<div[^>]*(?=[^>]*data-snippet="alpha")(?=[^>]*id="snippet-alpha")[^>]*>/);
+    expect(html).toContain("<p>Alpha</p>");
+  });
+
+  it("does not overwrite existing element id", async () => {
+    const dir = await setupFiles({
+      "snippets-index.json": JSON.stringify([{ slug: "alpha", path: "alpha.md" }]),
+      "alpha.md": `Alpha`,
+      "index.html": `<div id="custom-id" data-snippet="alpha"></div>`
+    });
+
+    const outputDir = path.join(dir, "out");
+    const outputPath = await compilePage(path.join(dir, "index.html"), {
+      manifest: path.join(dir, "snippets-index.json"),
+      outDir: outputDir
+    });
+
+    const html = await fs.readFile(outputPath, "utf8");
+    expect(html).toMatch(/<div[^>]*(?=[^>]*data-snippet="alpha")(?=[^>]*id="custom-id")[^>]*>/);
+    expect(html).toContain("<p>Alpha</p>");
+  });
 });
