@@ -10,7 +10,7 @@ const program = new Command();
 program
   .name("mark-down")
   .description(`${brand} CLI for building snippet manifests`)
-  .version("0.1.0");
+  .version("1.2.0");
 
 program
   .command("build")
