@@ -4,6 +4,7 @@ import { buildManifestFile } from "./manifest.js";
 import { watch as watchSnippets } from "./watch.js";
 import { brand, logEvent } from "./logger.js";
 import { DuplicateSlugError } from "./errors.js";
+import { compilePage } from "./compile-page.js";
 
 const program = new Command();
 program
@@ -34,6 +35,24 @@ program
   .action(async (sourceDir: string, options: { output?: string }) => {
     try {
       await watchSnippets(sourceDir, options.output);
+    } catch (error) {
+      handleError(error);
+    }
+  });
+
+program
+  .command("compile-page")
+  .argument("<inputHtml>", "HTML file containing data-snippet placeholders")
+  .option("--manifest <path>", "path to snippets-index.json")
+  .option("--outDir <path>", "output directory for compiled HTML", "dist")
+  .option("--inPlace", "overwrite the input HTML file instead of writing to outDir")
+  .action(async (inputHtml: string, options: { manifest?: string; outDir?: string; inPlace?: boolean }) => {
+    try {
+      await compilePage(inputHtml, {
+        manifest: options.manifest,
+        outDir: options.outDir,
+        inPlace: options.inPlace
+      });
     } catch (error) {
       handleError(error);
     }
