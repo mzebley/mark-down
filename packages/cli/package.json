@@ -1,6 +1,6 @@
 {
   "name": "@mzebley/mark-down-cli",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "mark↓ CLI for building snippet manifests",
   "type": "module",
   "bin": {
