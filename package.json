@@ -1,15 +1,16 @@
 {
   "name": "mark-down-monorepo",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "mark↓ monorepo containing core, CLI, Angular, and React adapters",
   "scripts": {
     "build": "npm run build -w @mzebley/mark-down && npm run build -w @mzebley/mark-down-cli && npm run build -w @mzebley/mark-down-angular && npm run build -w @mzebley/mark-down-react",
-    "test": "vitest run",
+    "test": "vitest run --exclude tests/cli.e2e.spec.ts",
     "test:watch": "vitest",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "release": "npm run test && npm run build && npm publish --workspaces"
+    "test:e2e": "vitest run tests/cli.e2e.spec.ts",
+    "release": "npm run test && npm run build && npm run test:e2e && npm publish --workspaces"
   },
   "workspaces": [
     "packages/*",
@@ -27,6 +28,7 @@
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.34.1",
+    "execa": "^8.0.1",
     "marked": "^11.1.0",
     "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
