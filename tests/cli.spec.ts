@@ -1,9 +1,10 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { buildManifest } from "../packages/cli/src/manifest";
 import { DuplicateSlugError } from "../packages/cli/src/errors";
+import { compilePage } from "../packages/cli/src/compile-page";
 
 async function setupFiles(structure: Record<string, string>) {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), "mark-down-cli-"));
@@ -62,5 +63,119 @@ describe("buildManifest", () => {
     });
 
     await expect(buildManifest(dir)).rejects.toBeInstanceOf(DuplicateSlugError);
+  });
+});
+
+describe("compilePage", () => {
+  it("hydrates snippets and writes to outDir", async () => {
+    const dir = await setupFiles({
+      "snippets-index.json": JSON.stringify([
+        { slug: "alpha", path: "snippets/alpha.md" },
+        { slug: "bravo", path: "snippets/bravo.md" }
+      ]),
+      "snippets/alpha.md": `---\nslug: alpha-title\n---\n**Hello**`,
+      "snippets/bravo.md": `Second snippet`,
+      "index.html": `
+        <section>
+          <div data-snippet="alpha"></div>
+          <div data-snippet="missing">keep</div>
+          <div data-snippet="bravo"></div>
+        </section>
+      `
+    });
+
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const outputDir = path.join(dir, "out");
+    const outputPath = await compilePage(path.join(dir, "index.html"), {
+      manifest: path.join(dir, "snippets-index.json"),
+      outDir: outputDir
+    });
+
+    expect(outputPath).toBe(path.join(outputDir, "index.html"));
+
+    const html = await fs.readFile(outputPath, "utf8");
+    expect(html).toContain('<p><strong>Hello</strong></p>');
+    expect(html).toContain('id="alpha-title"');
+    expect(html).toContain('<p>Second snippet</p>');
+    expect(html).toContain('<div data-snippet="missing">keep</div>');
+    expect(warnSpy).toHaveBeenCalledWith('mark↓: no snippet found for "missing"');
+
+    warnSpy.mockRestore();
+  });
+
+  it("overwrites source when inPlace is set", async () => {
+    const dir = await setupFiles({
+      "snippets-index.json": JSON.stringify([{ slug: "alpha", path: "alpha.md" }]),
+      "alpha.md": `Alpha`,
+      "page.html": `<div data-snippet="alpha"></div>`
+    });
+
+    const outputPath = await compilePage(path.join(dir, "page.html"), {
+      manifest: path.join(dir, "snippets-index.json"),
+      inPlace: true
+    });
+
+    expect(outputPath).toBe(path.join(dir, "page.html"));
+    const html = await fs.readFile(path.join(dir, "page.html"), "utf8");
+    expect(html).toContain('<p>Alpha</p>');
+  });
+
+  it("preserves doctype in output", async () => {
+    const dir = await setupFiles({
+      "snippets-index.json": JSON.stringify([{ slug: "alpha", path: "alpha.md" }]),
+      "alpha.md": `Content`,
+      "index.html": `<!doctype html>
+<html>
+  <body>
+    <div data-snippet="alpha"></div>
+  </body>
+</html>`
+    });
+
+    const outputDir = path.join(dir, "out");
+    const outputPath = await compilePage(path.join(dir, "index.html"), {
+      manifest: path.join(dir, "snippets-index.json"),
+      outDir: outputDir
+    });
+
+    const html = await fs.readFile(outputPath, "utf8");
+    expect(html.toLowerCase().startsWith("<!doctype html>")).toBe(true);
+    expect(html).toContain("<p>Content</p>");
+  });
+
+  it("uses snippet-<slug> as id when no front matter slug is present", async () => {
+    const dir = await setupFiles({
+      "snippets-index.json": JSON.stringify([{ slug: "alpha", path: "alpha.md" }]),
+      "alpha.md": `Alpha`,
+      "index.html": `<div data-snippet="alpha"></div>`
+    });
+
+    const outputDir = path.join(dir, "out");
+    const outputPath = await compilePage(path.join(dir, "index.html"), {
+      manifest: path.join(dir, "snippets-index.json"),
+      outDir: outputDir
+    });
+
+    const html = await fs.readFile(outputPath, "utf8");
+    expect(html).toMatch(/<div[^>]*(?=[^>]*data-snippet="alpha")(?=[^>]*id="snippet-alpha")[^>]*>/);
+    expect(html).toContain("<p>Alpha</p>");
+  });
+
+  it("does not overwrite existing element id", async () => {
+    const dir = await setupFiles({
+      "snippets-index.json": JSON.stringify([{ slug: "alpha", path: "alpha.md" }]),
+      "alpha.md": `Alpha`,
+      "index.html": `<div id="custom-id" data-snippet="alpha"></div>`
+    });
+
+    const outputDir = path.join(dir, "out");
+    const outputPath = await compilePage(path.join(dir, "index.html"), {
+      manifest: path.join(dir, "snippets-index.json"),
+      outDir: outputDir
+    });
+
+    const html = await fs.readFile(outputPath, "utf8");
+    expect(html).toMatch(/<div[^>]*(?=[^>]*data-snippet="alpha")(?=[^>]*id="custom-id")[^>]*>/);
+    expect(html).toContain("<p>Alpha</p>");
   });
 });

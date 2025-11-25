@@ -32,10 +32,10 @@ npx @mzebley/mark-down-cli build content/snippets
 ## Usage
 
 ```bash
-mark-down build <sourceDir> [options]
+mark-down <command> [options]
 ```
 
-The CLI walks the directory tree, gathers front matter, and writes `snippets-index.json` alongside your Markdown files by default.
+The CLI walks the directory tree, gathers front matter, and writes `snippets-index.json` alongside your Markdown files by default. It can also pre-render HTML files that already contain `data-snippet` placeholders.
 
 ## Commands
 
@@ -53,11 +53,26 @@ The CLI walks the directory tree, gathers front matter, and writes `snippets-ind
 - Logs progress with the familiar `[mark↓]` prefix.
 - Accepts the same options as `build`.
 
+### `mark-down compile-page <inputHtml>`
+
+- Reads an HTML file that contains elements with `data-snippet` attributes.
+- Resolves snippet metadata from `snippets-index.json` (auto-detected next to the HTML file or provided via `--manifest`).
+- Loads Markdown from disk, strips front matter, and renders HTML with the same `marked` pipeline as the runtime.
+- Injects the rendered HTML as the element `innerHTML` and writes the result to `dist/<file>.html` by default.
+- Use `--outDir` to change the output directory or `--inPlace` to overwrite the source file.
+- Unknown slugs are left untouched and logged as warnings. Table-of-contents generation remains a runtime concern.
+
 ## Configuration options
 
 The CLI stays intentionally small so it can be composed inside any toolchain. Currently supported flags:
 
 - `-o, --output <path>` – write the manifest to a custom file instead of `<sourceDir>/snippets-index.json`.
+
+### `compile-page` options
+
+- `--manifest <path>` – path to `snippets-index.json`. Defaults to the file next to `<inputHtml>`.
+- `--outDir <dir>` – output directory for compiled HTML. Defaults to `dist`.
+- `--inPlace` – overwrite the input HTML file instead of writing to `dist/`.
 
 Add flags directly after the command (`mark-down build content/snippets -o public/snippets-index.json`). Package scripts can capture these options as well.
 

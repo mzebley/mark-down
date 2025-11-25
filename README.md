@@ -24,7 +24,7 @@ A framework-agnostic snippet engine that indexes Markdown at build time and rend
 mark↓ separates content authorship from rendering. Markdown files live alongside your application, the CLI turns them into a searchable manifest, and the runtime clients render sanitized HTML when requested. The project ships as a monorepo containing:
 
 - `@mzebley/mark-down` – core TypeScript client utilities for fetching, caching, and rendering snippets.
-- `@mzebley/mark-down-cli` – the CLI that scans Markdown, parses YAML front matter, and produces a `snippets-index.json` manifest.
+- `@mzebley/mark-down-cli` – the CLI that scans Markdown, parses YAML front matter, and produces a `snippets-index.json` manifest. It can also pre-render HTML pages at build time with `compile-page`.
 - `@mzebley/mark-down-angular` – first-party bindings for Angular applications.
 - `@mzebley/mark-down-react` – first-party bindings for React applications.
 
@@ -67,6 +67,7 @@ Each package README dives deeper into configuration details, API references, and
 1. **Author Markdown snippets** – place Markdown files under `content/snippets` (or any directory you choose). Each file can optionally declare YAML front matter for metadata like `title`, `type`, and `tags`.
 2. **Build the manifest** – run the CLI to index snippets and generate `snippets-index.json`.
 3. **Render snippets** – consume the manifest with the core runtime or one of the framework adapters.
+4. **(Optional) Pre-render HTML** – hydrate `data-snippet` placeholders at build time with `mark-down compile-page`.
 
 ### 1. Author snippets
 
@@ -116,6 +117,16 @@ const components = await client.listByType("component");
 ```
 
 The client lazily fetches the manifest and snippets, parses YAML front matter with `yaml`, converts Markdown to HTML via `marked`, and caches everything in memory. See the [core runtime guide](packages/core/README.md) for option reference and advanced patterns like custom fetch functions or cache invalidation.
+
+### 4. (Optional) Pre-render HTML pages
+
+If you ship static sites that already include `data-snippet` placeholders, you can hydrate them at build time instead of in the browser:
+
+```bash
+npx mark-down compile-page www/index.html --manifest www/snippets-index.json --outDir dist
+```
+
+The command reads the HTML, loads snippets from the manifest on disk, strips front matter, renders Markdown with the same pipeline used at runtime, and writes a fully populated HTML file to `dist/index.html`. Pass `--inPlace` to overwrite the source file. Table-of-contents or other runtime-only transforms still happen client-side.
 
 ## Writing snippets
 
