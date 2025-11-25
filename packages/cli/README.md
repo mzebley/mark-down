@@ -68,6 +68,12 @@ The CLI stays intentionally small so it can be composed inside any toolchain. Cu
 
 - `-o, --output <path>` – write the manifest to a custom file instead of `<sourceDir>/snippets-index.json`.
 
+### `compile-page` options
+
+- `--manifest <path>` – path to `snippets-index.json`. Defaults to the file next to `<inputHtml>`.
+- `--outDir <dir>` – output directory for compiled HTML. Defaults to `dist`.
+- `--inPlace` – overwrite the input HTML file instead of writing to `dist/`.
+
 Add flags directly after the command (`mark-down build content/snippets -o public/snippets-index.json`). Package scripts can capture these options as well.
 
 ## Watching for changes

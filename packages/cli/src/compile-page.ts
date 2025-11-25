@@ -21,6 +21,8 @@ export async function compilePage(inputHtml: string, options: CompilePageOptions
   const manifest = await loadManifest(manifestPath);
 
   const rawHtml = await fs.readFile(sourcePath, "utf8");
+  const doctypeMatch = rawHtml.match(/^(<!doctype[^>]*>\s*)/i);
+  const doctype = doctypeMatch?.[1] ?? "";
   const dom = loadHtml(rawHtml, { decodeEntities: false });
 
   const targets = dom("[data-snippet]").toArray();
@@ -58,8 +60,8 @@ export async function compilePage(inputHtml: string, options: CompilePageOptions
     const html = renderMarkdown(body);
     element.html(html);
 
-    if (frontMatterSlug && !element.attr("id")) {
-      element.attr("id", frontMatterSlug);
+    if (!element.attr("id")) {
+      element.attr("id", frontMatterSlug ?? `snippet-${slug}`);
     }
   }
 
@@ -71,7 +73,7 @@ export async function compilePage(inputHtml: string, options: CompilePageOptions
     ? sourcePath
     : path.join(outputDir, path.basename(sourcePath));
 
-  const outputHtml = dom.html() ?? "";
+  const outputHtml = `${doctype}${dom.html() ?? ""}`;
   await fs.writeFile(outputPath, outputHtml);
 
   logEvent("info", "compile_page.written", { outputPath });
