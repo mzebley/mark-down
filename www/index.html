@@ -3,27 +3,87 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>mark↓ – a markdown snippet engine</title>
+  <meta property="og:title" content="mark↓">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://dynamowaves.markzebley.com">
+  <meta name="og:description" content="A markdown snippet engine.">
+  <meta name="description" content="Use markdown snippets anywhere within your HTML file.">
+  <script>
+    (function () {
+      const root = document.documentElement;
+      const storageKey = "markdown-theme";
+
+      const readStoredTheme = () => {
+        try {
+          return window.localStorage.getItem(storageKey);
+        } catch (error) {
+          return null;
+        }
+      };
+
+      const prefersDark = () => {
+        try {
+          return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        } catch (error) {
+          return false;
+        }
+      };
+
+      const storedTheme = readStoredTheme();
+      const theme = storedTheme === "dark" || storedTheme === "light"
+        ? storedTheme
+        : prefersDark()
+          ? "dark"
+          : "light";
+
+      root.dataset.theme = theme;
+      root.dataset.themeSource = storedTheme ? "manual" : "system";
+    })();
+  </script>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Puritan:ital,wght@0,400;0,700;1,400;1,700&family=Special+Gothic+Condensed+One&display=swap"
-    rel="stylesheet">
+
+  <link rel="stylesheet" href="zbk-mark-down.min.css" />
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdn.jsdelivr.net/gh/mzebley/dynamowaves/dist/dynamowaves.min.js"
     crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/theme-toggles@4.10.1/css/within.min.css"
+    integrity="sha256-4qLHDhzuDV3IgrWCWtrSlFovj05xXNXXOjXF5Oxsg4Y=" crossorigin="anonymous">
   <script src="script.js" type="module"></script>
 
 </head>
 
-<body>
-  <main class="page">
-    <section class="hero">
-      <div class="start">
+<body
+  class="font-primary margin-0 font-md line-height-4 display-flex flex-direction-column align-items-center">
+  <main class="page max-width-60 width-full display-flex flex-direction-column padding-block-end-8">
+    <section
+      class="hero padding-inline-2 width-full display-flex gap-2 tablet:gap-4 justify-content-center tablet:align-items-center padding-block-8 flex-direction-column tablet:flex-direction-row">
+      <label tabindex="0" class="theme-toggle" title="Toggle theme">
+        <input type="checkbox" id="theme-toggle-input">
+        <span class="theme-toggle-sr">Toggle theme</span>
+        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="theme-toggle__within" height="1em" width="1em"
+          viewBox="0 0 32 32" fill="currentColor">
+          <clipPath id="theme-toggle__within__clip">
+            <path d="M0 0h32v32h-32ZM6 16A1 1 0 0026 16 1 1 0 006 16"></path>
+          </clipPath>
+          <g clip-path="url(#theme-toggle__within__clip)">
+            <path
+              d="M30.7 21.3 27.1 16l3.7-5.3c.4-.5.1-1.3-.6-1.4l-6.3-1.1-1.1-6.3c-.1-.6-.8-.9-1.4-.6L16 5l-5.4-3.7c-.5-.4-1.3-.1-1.4.6l-1 6.3-6.4 1.1c-.6.1-.9.9-.6 1.3L4.9 16l-3.7 5.3c-.4.5-.1 1.3.6 1.4l6.3 1.1 1.1 6.3c.1.6.8.9 1.4.6l5.3-3.7 5.3 3.7c.5.4 1.3.1 1.4-.6l1.1-6.3 6.3-1.1c.8-.1 1.1-.8.7-1.4zM16 25.1c-5.1 0-9.1-4.1-9.1-9.1 0-5.1 4.1-9.1 9.1-9.1s9.1 4.1 9.1 9.1c0 5.1-4 9.1-9.1 9.1z">
+            </path>
+          </g>
+          <path class="theme-toggle__within__circle"
+            d="M16 7.7c-4.6 0-8.2 3.7-8.2 8.2s3.6 8.4 8.2 8.4 8.2-3.7 8.2-8.2-3.6-8.4-8.2-8.4zm0 14.4c-3.4 0-6.1-2.9-6.1-6.2s2.7-6.1 6.1-6.1c3.4 0 6.1 2.9 6.1 6.2s-2.7 6.1-6.1 6.1z">
+          </path>
+          <path class="theme-toggle__within__inner"
+            d="M16 9.5c-3.6 0-6.4 2.9-6.4 6.4s2.8 6.5 6.4 6.5 6.4-2.9 6.4-6.4-2.8-6.5-6.4-6.5z"></path>
+        </svg>
+      </label>
+      <div class="display-flex flex-direction-column gap-025 tablet:gap-05">
 
-        <div class="hero__logo">
+        <div class="hero__logo display-flex align-items-end">
           <svg id="logo__mark"
             aria-label="The logo for the mark down snippet library, the word mark with an animated down arrow"
             xmlns="http://www.w3.org/2000/svg" viewBox="2.16 35.136 180.555 84.743">
@@ -38,24 +98,25 @@
             </path>
           </svg>
         </div>
-        <p class="hero__tag">a markdown snippet engine</p>
+        <p class="hero__tag margin-0 padding-0 font-md tablet:font-lg ink-brand-600">a markdown snippet engine</p>
       </div>
-      <div class="end">
-        <p class="hero__support">
+      <div class="end tablet:margin-block-start-3 line-height-4">
+        <p class="hero__support font-lg tablet:font-xl margin-0 display-flex align-items-center gap-05">
           Write markdown once.
         </p>
 
-        <p class="hero__support">
+        <p class="hero__support font-lg tablet:font-xl margin-0 display-flex align-items-center gap-05">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
-            stroke-linecap="round" stroke-linejoin="round" class="icon">
+            class="width-105 tablet:width-2" stroke-linecap="round" stroke-linejoin="round" class="icon">
             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
             <path d="M6 6v6a3 3 0 0 0 3 3h10l-4 -4m0 8l4 -4" />
           </svg>
           Index it at build time.
         </p>
-        <p class="hero__support">
+        <p
+          class="hero__support font-lg tablet:font-xl margin-0 display-flex align-items-center gap-05 padding-inline-start-2 tablet:padding-inline-start-205">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
-            stroke-linecap="round" stroke-linejoin="round" class="icon">
+            class="width-105 tablet:width-2" stroke-linecap="round" stroke-linejoin="round" class="icon">
             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
             <path d="M6 6v6a3 3 0 0 0 3 3h10l-4 -4m0 8l4 -4" />
           </svg>
@@ -70,14 +131,19 @@
         </path>
       </svg>
     </section>
-    <section class="teaser" id="teaser">
-      <p>
-        <span class="brand-font">mark↓</span> is a tiny snippet engine for structured Markdown content with build-time
+    <section class="teaser padding-inline-2 display-flex justify-content-center width-full margin-block-8" id="teaser">
+      <p class="font-md margin-0 measure-3">
+        <span class="font-alt font-lg ink-accent-primary-700">mark↓</span> is a tiny snippet engine for structured
+        Markdown content with build-time
         indexing, runtime
-        fetching, and clean HTML rendering. It's framework-agnostic with optional Angular &amp; React adapters.
+        fetching, and clean HTML rendering. It's framework-agnostic with optional Angular &amp; React adapters, and
+        includes hooks to grab specific content by <code class="font-monospace">front-matter</code> metadata and
+        autogenerated group tagging based on your snippet folder structure.
       </p>
     </section>
-    <section class="flow" aria-label="Snippet flow">
+    <section
+      class="flow padding-inline-05 display-flex flex-direction-column gap-2 margin-block-start-4 margin-block-end-8 align-items-center"
+      aria-label="Snippet flow">
       <div class="card">
         <p class="card__label">Markdown</p>
         <pre><code>---
@@ -89,6 +155,12 @@ tags: [intro]
 Some copy in **Markdown**.
 </code></pre>
       </div>
+      <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" viewBox="180.65 2.595 73.176 114.991"
+        class="svg-arrow">
+        <path
+          d="M 191.778 69.87 L 208.639 88.754 L 208.639 2.595 L 225.837 2.595 L 225.837 88.754 L 242.698 69.87 L 253.826 80.998 L 217.238 117.586 L 180.65 80.998 L 191.778 69.87 Z">
+        </path>
+      </svg>
       <div class="card">
         <p class="card__label">Indexed snippet</p>
         <pre><code>{
@@ -100,11 +172,23 @@ Some copy in **Markdown**.
 }
 </code></pre>
       </div>
+      <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" viewBox="180.65 2.595 73.176 114.991"
+        class="svg-arrow">
+        <path
+          d="M 191.778 69.87 L 208.639 88.754 L 208.639 2.595 L 225.837 2.595 L 225.837 88.754 L 242.698 69.87 L 253.826 80.998 L 217.238 117.586 L 180.65 80.998 L 191.778 69.87 Z">
+        </path>
+      </svg>
       <div class="card">
         <p class="card__label">Written HTML</p>
         <pre><code>&lt;div data-snippet="getting-started"&gt;&lt;/div&gt;
 </code></pre>
       </div>
+      <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" viewBox="180.65 2.595 73.176 114.991"
+        class="svg-arrow">
+        <path
+          d="M 191.778 69.87 L 208.639 88.754 L 208.639 2.595 L 225.837 2.595 L 225.837 88.754 L 242.698 69.87 L 253.826 80.998 L 217.238 117.586 L 180.65 80.998 L 191.778 69.87 Z">
+        </path>
+      </svg>
       <div class="card">
         <p class="card__label">Rendered HTML</p>
         <pre><code>&lt;div&gt;
@@ -115,16 +199,17 @@ Some copy in **Markdown**.
       </div>
     </section>
 
-
-
-    <section class="terminal" aria-label="Install mark-down">
-      <div class="terminal__window">
+    <section
+      class="terminal padding-inline-105 display-flex flex-direction-column tablet:flex-direction-row gap-2 margin-block-8 tablet:align-items-center tablet:justify-content-center"
+      aria-label="Install mark-down">
+      <div class="terminal__window max-width-mobile">
         <div class="terminal__dots">
           <span></span><span></span><span></span>
         </div>
         <code>npm i @mzebley/mark-down</code>
       </div>
-      <div class="terminal__actions">
+      <div
+        class="terminal__actions display-flex flex-direction-column gap-2 align-items-center tablet:flex-direction-column tablet:gap-105 tablet:align-items-start">
         <a class="btn primary" href="https://github.com/mzebley/mark-down" target="_blank">View on GitHub <span
             class="sr-only">opens in new tab</span> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -147,10 +232,11 @@ Some copy in **Markdown**.
     </section>
   </main>
   <dynamo-wave data-wave-animate="true"></dynamo-wave>
-  <footer class="footer">
+  <footer
+    class="footer width-full display-flex justify-content-between gap-2 align-items-end font-xs padding-inline-1 padding-block-start-1 padding-block-end-05 tablet:padding-inline-2">
     <p>Open-source · MIT License</p>
     <a href="https://markzebley.com" aria-label="External link to markzebley.com homepage" target="_blank"><svg
-        version="1.0" viewBox="0 0 598.000000 598.000000" preserveAspectRatio="xMidYMid meet" fill="var(--theme)"
+        version="1.0" viewBox="0 0 598.000000 598.000000" preserveAspectRatio="xMidYMid meet"
         xmlns="http://www.w3.org/2000/svg">
         <g transform="translate(0.000000,598.000000) scale(0.100000,-0.100000)" fill="inherit" stroke="none">
           <path d="M4790 5795 c-19 -9 -44 -24 -55 -34 -23 -22 -155 -109 -251 -166 -59
@@ -238,6 +324,100 @@ Some copy in **Markdown**.
       </svg></a>
   </footer>
 
+  <script>
+    (function () {
+      const storageKey = "markdown-theme";
+      const root = document.documentElement;
+      const toggleLabel = document.querySelector(".theme-toggle");
+      const toggle = document.querySelector(".theme-toggle input[type=\"checkbox\"]");
+      const prefersDarkQuery = "(prefers-color-scheme: dark)";
+      const mediaQuery = window.matchMedia ? window.matchMedia(prefersDarkQuery) : null;
+
+      const readStoredTheme = () => {
+        try {
+          return window.localStorage.getItem(storageKey);
+        } catch (error) {
+          return null;
+        }
+      };
+
+      const writeStoredTheme = (value) => {
+        try {
+          window.localStorage.setItem(storageKey, value);
+        } catch (error) {
+          /* localStorage unavailable */
+        }
+      };
+
+      const clearStoredTheme = () => {
+        try {
+          window.localStorage.removeItem(storageKey);
+        } catch (error) {
+          /* localStorage unavailable */
+        }
+      };
+
+      const applyTheme = (theme, source) => {
+        const nextTheme = theme === "dark" ? "dark" : "light";
+        root.dataset.theme = nextTheme;
+        root.dataset.themeSource = source;
+        if (toggle) {
+          toggle.checked = nextTheme === "dark";
+        }
+      };
+
+      const storedTheme = (() => {
+        const value = readStoredTheme();
+        return value === "dark" || value === "light" ? value : null;
+      })();
+
+      const initialTheme = root.dataset.theme || storedTheme || (mediaQuery && mediaQuery.matches ? "dark" : "light");
+      const initialSource = root.dataset.themeSource || (storedTheme ? "manual" : "system");
+      applyTheme(initialTheme, initialSource);
+
+      const handleToggle = (event) => {
+        const nextTheme = event.target.checked ? "dark" : "light";
+        applyTheme(nextTheme, "manual");
+        writeStoredTheme(nextTheme);
+      };
+
+      if (toggle) {
+        toggle.addEventListener("change", handleToggle);
+      }
+
+      const handleLabelKeydown = (event) => {
+        const isActivationKey =
+          event.key === "Enter" || event.key === " " || event.key === "Spacebar";
+        if (!isActivationKey || !toggle) {
+          return;
+        }
+        event.preventDefault();
+        toggle.checked = !toggle.checked;
+        toggle.dispatchEvent(new Event("change", { bubbles: true }));
+      };
+
+      if (toggleLabel) {
+        toggleLabel.addEventListener("keydown", handleLabelKeydown);
+      }
+
+      const handleSystemPreferenceChange = (event) => {
+        if (root.dataset.themeSource === "manual") {
+          return;
+        }
+        const nextTheme = event.matches ? "dark" : "light";
+        applyTheme(nextTheme, "system");
+        clearStoredTheme();
+      };
+
+      if (mediaQuery) {
+        if (mediaQuery.addEventListener) {
+          mediaQuery.addEventListener("change", handleSystemPreferenceChange);
+        } else if (mediaQuery.addListener) {
+          mediaQuery.addListener(handleSystemPreferenceChange);
+        }
+      }
+    })();
+  </script>
 </body>
 
 </html>

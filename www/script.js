@@ -5,7 +5,7 @@ const fadeInScrollIndicator = () => {
     setTimeout(() => {
       indicator.classList.add('bounce-top');
     }, 3000)
-  }, 7500)
+  }, 5250)
 }
 
 fadeInScrollIndicator();
