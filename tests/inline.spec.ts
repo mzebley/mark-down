@@ -14,10 +14,12 @@ const originalDocument = globalThis.document;
 describe("enhanceInlineMarkdown", () => {
   afterEach(() => {
     if (originalDocument) {
-      (globalThis as typeof globalThis & { document: Document }).document = originalDocument;
+      (globalThis as typeof globalThis & { document: Document }).document =
+        originalDocument;
     } else {
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete (globalThis as typeof globalThis & { document?: Document }).document;
+      delete (globalThis as typeof globalThis & { document?: Document })
+        .document;
     }
   });
 
@@ -110,6 +112,16 @@ Content`);
     expect(element.innerHTML).toContain("title: [");
     warnSpy.mockRestore();
   });
+
+  it("sanitizes inline HTML when enabled", () => {
+    const element = createElement(`**Safe** <script>alert(1)</script>`);
+    stubDocument([element]);
+
+    enhanceInlineMarkdown({ sanitize: { policy: "strict" } });
+
+    expect(element.innerHTML).toContain("<strong>Safe</strong>");
+    expect(element.innerHTML).not.toContain("<script>");
+  });
 });
 
 function createElement(markdown: string): InlineTestElement {
@@ -127,15 +139,18 @@ function createElement(markdown: string): InlineTestElement {
             classes.add(token);
           }
         }
-      }
+      },
     } as unknown as DOMTokenList,
-    __classes: classes
+    __classes: classes,
   };
 
   return element as InlineTestElement;
 }
 
-function stubDocument(elements: InlineTestElement[], selector = "[data-markdown]"): void {
+function stubDocument(
+  elements: InlineTestElement[],
+  selector = "[data-markdown]",
+): void {
   const nodeList = elements as unknown as NodeListOf<HTMLElement>;
   const fakeDocument = {
     querySelectorAll: (query: string) => {
@@ -143,8 +158,9 @@ function stubDocument(elements: InlineTestElement[], selector = "[data-markdown]
         return nodeList;
       }
       return [] as unknown as NodeListOf<HTMLElement>;
-    }
+    },
   };
 
-  (globalThis as typeof globalThis & { document: Document }).document = fakeDocument as Document;
+  (globalThis as typeof globalThis & { document: Document }).document =
+    fakeDocument as Document;
 }

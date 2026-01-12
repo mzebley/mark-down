@@ -9,7 +9,11 @@ export interface SnippetProviderProps {
   children: ReactNode;
 }
 
-export function SnippetProvider({ client, options, children }: SnippetProviderProps) {
+export function SnippetProvider({
+  client,
+  options,
+  children,
+}: SnippetProviderProps) {
   const value = useMemo(() => {
     if (client) {
       return client;
@@ -20,7 +24,11 @@ export function SnippetProvider({ client, options, children }: SnippetProviderPr
     throw new Error("SnippetProvider requires either a client or options");
   }, [client, options]);
 
-  return <SnippetClientContext.Provider value={value}>{children}</SnippetClientContext.Provider>;
+  return (
+    <SnippetClientContext.Provider value={value}>
+      {children}
+    </SnippetClientContext.Provider>
+  );
 }
 
 export function useSnippetClient(): SnippetClient {

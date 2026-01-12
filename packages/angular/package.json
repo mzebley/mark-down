@@ -1,12 +1,14 @@
 {
   "name": "@mzebley/mark-down-angular",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "mark↓ Angular Adapter",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -23,6 +25,9 @@
   "dependencies": {
     "@mzebley/mark-down": "^1.2.2",
     "dompurify": "^3.0.9"
+  },
+  "devDependencies": {
+    "@angular/platform-browser": ">=17 <21"
   },
   "peerDependencies": {
     "@angular/common": ">=17 <21",

@@ -1,6 +1,7 @@
 import { normalizeSlug } from "./slug";
 import { parseFrontMatter } from "./front-matter";
 import { renderMarkdown } from "./markdown";
+import { sanitizeMarkup } from "./sanitize";
 import { ManifestLoadError, SnippetNotFoundError } from "./errors";
 import type {
   ManifestSource,
@@ -9,7 +10,7 @@ import type {
   SnippetClientOptions,
   SnippetFetcherResult,
   SnippetMeta,
-  SnippetSearchFilter
+  SnippetSearchFilter,
 } from "./types";
 
 export { ManifestLoadError, SnippetNotFoundError } from "./errors";
@@ -22,6 +23,7 @@ interface SnippetClientInternalOptions {
   cache: boolean;
   verbose: boolean;
   render: (markdown: string) => Promise<string>;
+  sanitize?: SnippetClientOptions["sanitize"];
 }
 
 const HTTP_PATTERN = /^https?:\/\//i;
@@ -36,11 +38,16 @@ export class SnippetClient {
 
   constructor(options: SnippetClientOptions) {
     if (!options || !options.manifest) {
-      throw new ManifestLoadError("A manifest source must be provided to SnippetClient.");
+      throw new ManifestLoadError(
+        "A manifest source must be provided to SnippetClient.",
+      );
     }
 
-    this.manifestUrl = typeof options.manifest === "string" ? options.manifest : undefined;
-    this.inferredBase = this.manifestUrl ? deriveBaseFromManifest(this.manifestUrl) : undefined;
+    this.manifestUrl =
+      typeof options.manifest === "string" ? options.manifest : undefined;
+    this.inferredBase = this.manifestUrl
+      ? deriveBaseFromManifest(this.manifestUrl)
+      : undefined;
 
     const fetcher = options.fetch ?? defaultFetch;
 
@@ -63,7 +70,8 @@ export class SnippetClient {
       frontMatter: options.frontMatter !== false,
       cache: options.cache !== false,
       verbose: options.verbose === true,
-      render: renderer
+      render: renderer,
+      sanitize: options.sanitize,
     };
   }
 
@@ -90,9 +98,7 @@ export class SnippetClient {
 
   async listByType(type: string): Promise<SnippetMeta[]> {
     const manifest = await this.loadManifest();
-    return manifest
-      .filter((item) => item.type === type)
-      .map(cloneMeta);
+    return manifest.filter((item) => item.type === type).map(cloneMeta);
   }
 
   async search(filter: SnippetSearchFilter): Promise<SnippetMeta[]> {
@@ -159,7 +165,9 @@ export class SnippetClient {
       } else if (typeof source === "function") {
         const result = await source();
         if (!Array.isArray(result)) {
-          throw new ManifestLoadError("Manifest loader must resolve to an array of snippet metadata.");
+          throw new ManifestLoadError(
+            "Manifest loader must resolve to an array of snippet metadata.",
+          );
         }
         entries = result.map(normalizeManifestEntry);
       } else {
@@ -177,7 +185,9 @@ export class SnippetClient {
   }
 
   private loadSnippet(meta: SnippetMeta): Promise<Snippet> {
-    const cached = this.options.cache ? this.snippetCache.get(meta.slug) : undefined;
+    const cached = this.options.cache
+      ? this.snippetCache.get(meta.slug)
+      : undefined;
     if (cached) {
       return cached;
     }
@@ -194,17 +204,25 @@ export class SnippetClient {
     try {
       raw = await this.options.fetch(url);
     } catch (error) {
-      throw new ManifestLoadError(`Failed to fetch snippet at '${url}'.`, error);
+      throw new ManifestLoadError(
+        `Failed to fetch snippet at '${url}'.`,
+        error,
+      );
     }
 
-    const frontMatter = this.options.frontMatter ? parseFrontMatter(raw) : undefined;
+    const frontMatter = this.options.frontMatter
+      ? parseFrontMatter(raw)
+      : undefined;
     const body = frontMatter?.content ?? raw;
-    const html = await this.options.render(body);
+    let html = await this.options.render(body);
+    if (this.options.sanitize) {
+      html = sanitizeMarkup(html, this.options.sanitize);
+    }
 
     const merged: SnippetMeta = {
       ...meta,
       ...pickMeta(frontMatter?.meta),
-      extra: mergeExtra(meta.extra, frontMatter?.extra)
+      extra: mergeExtra(meta.extra, frontMatter?.extra),
     };
 
     if (frontMatter?.slug) {
@@ -212,12 +230,15 @@ export class SnippetClient {
         const normalizedFrontSlug = normalizeSlug(frontMatter.slug);
         if (normalizedFrontSlug !== meta.slug && this.options.verbose) {
           console.warn(
-            `Front-matter slug '${frontMatter.slug}' (normalized: '${normalizedFrontSlug}') differs from manifest slug '${meta.slug}'.`
+            `Front-matter slug '${frontMatter.slug}' (normalized: '${normalizedFrontSlug}') differs from manifest slug '${meta.slug}'.`,
           );
         }
       } catch (error) {
         if (this.options.verbose) {
-          console.warn(`Failed to normalize front-matter slug '${frontMatter.slug}':`, error);
+          console.warn(
+            `Failed to normalize front-matter slug '${frontMatter.slug}':`,
+            error,
+          );
         }
       }
     }
@@ -255,33 +276,45 @@ function parseManifest(raw: string, source: string): SnippetMeta[] {
   try {
     parsed = JSON.parse(raw);
   } catch (error) {
-    throw new ManifestLoadError(`Manifest at '${source}' is not valid JSON.`, error);
+    throw new ManifestLoadError(
+      `Manifest at '${source}' is not valid JSON.`,
+      error,
+    );
   }
 
   if (!Array.isArray(parsed)) {
-    throw new ManifestLoadError(`Manifest at '${source}' must be a JSON array.`);
+    throw new ManifestLoadError(
+      `Manifest at '${source}' must be a JSON array.`,
+    );
   }
 
   return parsed as SnippetMeta[];
 }
 
 function normalizeManifestEntry(entry: SnippetMeta): SnippetMeta {
+  if (!entry || typeof entry !== "object") {
+    throw new ManifestLoadError("Manifest entry must be an object.");
+  }
   if (!entry.slug) {
-    throw new ManifestLoadError("Manifest entry is missing required 'slug' property.");
+    throw new ManifestLoadError(
+      "Manifest entry is missing required 'slug' property.",
+    );
   }
   if (!entry.path) {
-    throw new ManifestLoadError(`Manifest entry for '${entry.slug}' is missing required 'path'.`);
+    throw new ManifestLoadError(
+      `Manifest entry for '${entry.slug}' is missing required 'path'.`,
+    );
   }
   const normalized: SnippetMeta = {
     slug: entry.slug,
     title: entry.title,
     type: entry.type,
     order: entry.order,
-    tags: entry.tags ? [...entry.tags] : undefined,
+    tags: normalizeTags(entry.tags),
     path: normalizeForwardSlashes(entry.path),
     group: entry.group ?? null,
     draft: entry.draft,
-    extra: cloneRecord(entry.extra)
+    extra: cloneRecord(entry.extra),
   };
   return normalized;
 }
@@ -319,9 +352,10 @@ function joinPaths(base: string, relative: string): string {
 }
 
 function normalizeForwardSlashes(value: string): string {
-  if (HTTP_PATTERN.test(value)) {
+  const sanitized = value.replace(/\\/g, "/");
+  if (HTTP_PATTERN.test(sanitized)) {
     try {
-      const url = new URL(value);
+      const url = new URL(sanitized);
       url.pathname = url.pathname.replace(/\/{2,}/g, "/");
       return url.toString();
     } catch {
@@ -329,22 +363,20 @@ function normalizeForwardSlashes(value: string): string {
     }
   }
 
-  if (value.startsWith("//")) {
-    return `//${value.slice(2).replace(/\/{2,}/g, "/")}`;
+  if (sanitized.startsWith("//")) {
+    return `//${sanitized.slice(2).replace(/\/{2,}/g, "/")}`;
   }
 
-  if (value.startsWith("/")) {
-    return `/${value
-      .slice(1)
-      .replace(/\/{2,}/g, "/")}`;
+  if (sanitized.startsWith("/")) {
+    return `/${sanitized.slice(1).replace(/\/{2,}/g, "/")}`;
   }
 
-  return value.replace(/\/{2,}/g, "/");
+  return sanitized.replace(/\/{2,}/g, "/");
 }
 
 function mergeExtra(
   base: Record<string, unknown> | undefined,
-  overrides: Record<string, unknown> | undefined
+  overrides: Record<string, unknown> | undefined,
 ): Record<string, unknown> | undefined {
   if (!base && !overrides) {
     return undefined;
@@ -352,7 +384,9 @@ function mergeExtra(
   return { ...(base ?? {}), ...(overrides ?? {}) };
 }
 
-function cloneRecord<T extends Record<string, unknown> | undefined>(value: T): T {
+function cloneRecord<T extends Record<string, unknown> | undefined>(
+  value: T,
+): T {
   if (!value) {
     return value;
   }
@@ -362,22 +396,47 @@ function cloneRecord<T extends Record<string, unknown> | undefined>(value: T): T
 function cloneMeta(meta: SnippetMeta): SnippetMeta {
   return {
     ...meta,
-    tags: meta.tags ? [...meta.tags] : undefined,
-    extra: cloneRecord(meta.extra)
+    tags: normalizeTags(meta.tags),
+    extra: cloneRecord(meta.extra),
   };
 }
 
+function normalizeTags(value: unknown): string[] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  if (Array.isArray(value)) {
+    return value.map((entry) => String(entry));
+  }
+  if (typeof value === "string") {
+    return value
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+  }
+  return undefined;
+}
+
 async function defaultFetch(url: string): Promise<SnippetFetcherResult> {
-  const runtimeFetch = (globalThis as typeof globalThis & { fetch?: typeof fetch }).fetch;
+  const runtimeFetch = (
+    globalThis as typeof globalThis & { fetch?: typeof fetch }
+  ).fetch;
   if (!runtimeFetch) {
-    throw new ManifestLoadError("No global fetch implementation is available. Provide a custom fetch function.");
+    throw new ManifestLoadError(
+      "No global fetch implementation is available. Provide a custom fetch function.",
+    );
   }
   return runtimeFetch(url);
 }
 
-async function resolveResponseText(response: ResponseLike, url: string): Promise<string> {
+async function resolveResponseText(
+  response: ResponseLike,
+  url: string,
+): Promise<string> {
   if (!response.ok) {
-    throw new ManifestLoadError(`Request to '${url}' failed with status ${response.status}.`);
+    throw new ManifestLoadError(
+      `Request to '${url}' failed with status ${response.status}.`,
+    );
   }
   return response.text();
 }

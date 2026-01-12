@@ -8,8 +8,8 @@ import { DuplicateSlugError } from "./errors.js";
 
 const MATTER_OPTIONS = {
   engines: {
-    yaml: (source: string) => YAML.parse(source) ?? {}
-  }
+    yaml: (source: string) => YAML.parse(source) ?? {},
+  },
 };
 
 export interface BuildOptions {
@@ -22,9 +22,12 @@ export interface BuildResult {
   outputPath: string;
 }
 
-export async function buildManifestFile(options: BuildOptions): Promise<BuildResult> {
+export async function buildManifestFile(
+  options: BuildOptions,
+): Promise<BuildResult> {
   const manifest = await buildManifest(options.sourceDir);
-  const target = options.outputPath ?? path.join(options.sourceDir, "snippets-index.json");
+  const target =
+    options.outputPath ?? path.join(options.sourceDir, "snippets-index.json");
   await fs.writeFile(target, JSON.stringify(manifest, null, 2));
   return { manifest, outputPath: target };
 }
@@ -37,20 +40,29 @@ export async function buildManifest(sourceDir: string): Promise<SnippetMeta[]> {
   for (const absolutePath of files) {
     const relativePath = path.relative(cwd, absolutePath);
     const normalizedPath = toPosix(relativePath);
-    const content = await fs.readFile(absolutePath, "utf8");
-    const parsed = matter(content, MATTER_OPTIONS);
-    const snippet = createSnippet(normalizedPath, parsed.data ?? {});
-    if (snippet.draft) {
-      continue;
+    try {
+      const content = await fs.readFile(absolutePath, "utf8");
+      const parsed = matter(content, MATTER_OPTIONS);
+      const snippet = createSnippet(normalizedPath, parsed.data ?? {});
+      if (snippet.draft) {
+        continue;
+      }
+      manifest.push(snippet);
+    } catch (error) {
+      console.warn(
+        `mark↓: failed to load snippet at '${normalizedPath}'`,
+        error,
+      );
     }
-    manifest.push(snippet);
   }
 
   ensureUniqueSlugs(manifest);
 
   manifest.sort((a, b) => {
-    const orderA = typeof a.order === "number" ? a.order : Number.POSITIVE_INFINITY;
-    const orderB = typeof b.order === "number" ? b.order : Number.POSITIVE_INFINITY;
+    const orderA =
+      typeof a.order === "number" ? a.order : Number.POSITIVE_INFINITY;
+    const orderB =
+      typeof b.order === "number" ? b.order : Number.POSITIVE_INFINITY;
     if (orderA !== orderB) {
       return orderA - orderB;
     }
@@ -62,11 +74,15 @@ export async function buildManifest(sourceDir: string): Promise<SnippetMeta[]> {
   return manifest;
 }
 
-export function createSnippet(relativePath: string, frontMatter: Record<string, unknown>): SnippetMeta {
+export function createSnippet(
+  relativePath: string,
+  frontMatter: Record<string, unknown>,
+): SnippetMeta {
   const group = deriveGroup(relativePath);
-  const slugSource = typeof frontMatter.slug === "string" && frontMatter.slug.trim().length
-    ? frontMatter.slug
-    : relativePath.replace(/\.md$/i, "");
+  const slugSource =
+    typeof frontMatter.slug === "string" && frontMatter.slug.trim().length
+      ? frontMatter.slug
+      : relativePath.replace(/\.md$/i, "");
   const slug = normalizeSlug(slugSource);
 
   const { title, order, type, tags, draft } = normalizeKnownFields(frontMatter);
@@ -81,25 +97,28 @@ export function createSnippet(relativePath: string, frontMatter: Record<string, 
     draft,
     path: relativePath,
     group,
-    extra
+    extra,
   };
 }
 
 function normalizeKnownFields(data: Record<string, unknown>) {
   return {
     title: typeof data.title === "string" ? data.title : undefined,
-    order: typeof data.order === "number"
-      ? data.order
-      : data.order === null
-        ? null
-        : undefined,
+    order:
+      typeof data.order === "number"
+        ? data.order
+        : data.order === null
+          ? null
+          : undefined,
     type: typeof data.type === "string" ? data.type : undefined,
     tags: normalizeTags(data.tags),
-    draft: data.draft === true ? true : undefined
+    draft: data.draft === true ? true : undefined,
   };
 }
 
-function collectExtra(data: Record<string, unknown>): Record<string, unknown> | undefined {
+function collectExtra(
+  data: Record<string, unknown>,
+): Record<string, unknown> | undefined {
   const extra: Record<string, unknown> = {};
   const reserved = new Set(["slug", "title", "order", "type", "tags", "draft"]);
   for (const [key, value] of Object.entries(data)) {

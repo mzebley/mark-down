@@ -1,7 +1,8 @@
 # mark↓
-*(published as `@mzebley/mark-down`)*
 
-A framework-agnostic snippet engine that indexes Markdown at build time and renders HTML safely at runtime.
+_(published as `@mzebley/mark-down`)_
+
+A framework-agnostic snippet engine that indexes Markdown at build time and renders HTML at runtime with optional sanitization.
 
 - Looking for the package docs? Jump directly to the [Core runtime](packages/core/README.md), [CLI](packages/cli/README.md), [Angular adapter](packages/angular/README.md), or [React adapter](packages/react/README.md).
 - Want to poke around an end-to-end example? See [`examples/basic`](examples/basic/README.md).
@@ -21,7 +22,7 @@ A framework-agnostic snippet engine that indexes Markdown at build time and rend
 
 ## Overview
 
-mark↓ separates content authorship from rendering. Markdown files live alongside your application, the CLI turns them into a searchable manifest, and the runtime clients render sanitized HTML when requested. The project ships as a monorepo containing:
+mark↓ separates content authorship from rendering. Markdown files live alongside your application, the CLI turns them into a searchable manifest, and the runtime clients render HTML with optional sanitization when requested. The project ships as a monorepo containing:
 
 - `@mzebley/mark-down` – core TypeScript client utilities for fetching, caching, and rendering snippets.
 - `@mzebley/mark-down-cli` – the CLI that scans Markdown, parses YAML front matter, and produces a `snippets-index.json` manifest. It can also pre-render HTML pages at build time with `compile-page`.
@@ -126,7 +127,7 @@ If you ship static sites that already include `data-snippet` placeholders, you c
 npx mark-down compile-page www/index.html --manifest www/snippets-index.json --outDir dist
 ```
 
-The command reads the HTML, loads snippets from the manifest on disk, strips front matter, renders Markdown with the same pipeline used at runtime, and writes a fully populated HTML file to `dist/index.html`. Pass `--inPlace` to overwrite the source file. Table-of-contents or other runtime-only transforms still happen client-side.
+The command reads the HTML, loads snippets from the manifest on disk, strips front matter, renders Markdown with the same pipeline used at runtime, and writes a fully populated HTML file to `dist/index.html`. Pass `--inPlace` to overwrite the source file or `--sanitize` to apply the built-in HTML sanitizer. Table-of-contents or other runtime-only transforms still happen client-side.
 
 ## Writing snippets
 

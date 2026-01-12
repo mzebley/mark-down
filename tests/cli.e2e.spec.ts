@@ -9,13 +9,15 @@ import { execa } from "execa";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function setupFiles(structure: Record<string, string>) {
-  const dir = await fsPromises.mkdtemp(path.join(os.tmpdir(), "mark-down-cli-e2e-"));
+  const dir = await fsPromises.mkdtemp(
+    path.join(os.tmpdir(), "mark-down-cli-e2e-"),
+  );
   await Promise.all(
     Object.entries(structure).map(async ([relative, contents]) => {
       const filePath = path.join(dir, relative);
       await fsPromises.mkdir(path.dirname(filePath), { recursive: true });
       await fsPromises.writeFile(filePath, contents, "utf8");
-    })
+    }),
   );
   return dir;
 }
@@ -25,7 +27,9 @@ async function ensureCliEntry() {
   const cliEntry = path.join(root, "packages/cli/dist/index.mjs");
 
   if (!fs.existsSync(cliEntry)) {
-    await execa("npm", ["run", "build", "-w", "@mzebley/mark-down-cli"], { cwd: root });
+    await execa("npm", ["run", "build", "-w", "@mzebley/mark-down-cli"], {
+      cwd: root,
+    });
   }
 
   if (!fs.existsSync(cliEntry)) {
@@ -42,7 +46,7 @@ describe("mark-down CLI (e2e)", () => {
     const dir = await setupFiles({
       "snippets-index.json": JSON.stringify([
         { slug: "alpha", path: "snippets/alpha.md" },
-        { slug: "beta", path: "snippets/beta.md" }
+        { slug: "beta", path: "snippets/beta.md" },
       ]),
       "snippets/alpha.md": `---\nslug: hero-section\n---\n**Hello** from alpha`,
       "snippets/beta.md": `Second snippet`,
@@ -51,15 +55,23 @@ describe("mark-down CLI (e2e)", () => {
           <div data-snippet="alpha"></div>
           <div data-snippet="beta"></div>
         </section>
-      `
+      `,
     });
 
     const result = await execa(
       "node",
-      [cliEntry, "compile-page", "index.html", "--manifest", "snippets-index.json", "--outDir", "out"],
+      [
+        cliEntry,
+        "compile-page",
+        "index.html",
+        "--manifest",
+        "snippets-index.json",
+        "--outDir",
+        "out",
+      ],
       {
-        cwd: dir
-      }
+        cwd: dir,
+      },
     );
 
     expect(result.exitCode).toBe(0);

@@ -3,7 +3,7 @@ import {
   SNIPPET_CLIENT,
   SNIPPET_CLIENT_OPTIONS,
   provideSnippetClient,
-  type SnippetClientOptions
+  type SnippetClientOptions,
 } from "@mzebley/mark-down/angular";
 
 export const MARK_DOWN_CLIENT = SNIPPET_CLIENT;

@@ -1,12 +1,14 @@
 {
   "name": "@mzebley/mark-down-react",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "mark↓ React Adapter",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },

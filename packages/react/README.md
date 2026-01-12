@@ -1,5 +1,6 @@
 # mark↓ React Adapter
-*(published as `@mzebley/mark-down-react`)*
+
+_(published as `@mzebley/mark-down-react`)_
 
 React bindings for the [mark↓ core runtime](../core/README.md). This package exposes context providers, hooks, and ready-to-use components that make it simple to render Markdown snippets safely. For a broader overview of the project, start with the [root README](../../README.md).
 
@@ -29,11 +30,11 @@ Generate a manifest with the [CLI](../cli/README.md) before rendering snippets.
 Wrap your app with the `SnippetProvider` so that hooks and components can access a shared client instance:
 
 ```tsx
-import { SnippetProvider } from '@mzebley/mark-down-react';
+import { SnippetProvider } from "@mzebley/mark-down-react";
 
 export function App({ children }: { children: React.ReactNode }) {
   return (
-    <SnippetProvider options={{ manifest: '/snippets-index.json' }}>
+    <SnippetProvider options={{ manifest: "/snippets-index.json" }}>
       {children}
     </SnippetProvider>
   );
@@ -49,10 +50,10 @@ export function App({ children }: { children: React.ReactNode }) {
 Fetch a single snippet and track loading / error state:
 
 ```tsx
-import { useSnippet } from '@mzebley/mark-down-react';
+import { useSnippet } from "@mzebley/mark-down-react";
 
 export function Hero() {
-  const { snippet, loading, error } = useSnippet('getting-started-welcome');
+  const { snippet, loading, error } = useSnippet("getting-started-welcome");
 
   if (loading) return <p>Loading…</p>;
   if (error) return <p role="alert">Failed to load snippet.</p>;
@@ -67,13 +68,13 @@ export function Hero() {
 Render snippets declaratively with built-in loading and error fallbacks:
 
 ```tsx
-import { SnippetView } from '@mzebley/mark-down-react';
+import { SnippetView } from "@mzebley/mark-down-react";
 
 <SnippetView
   slug="components-button"
   loadingFallback={<p>Loading…</p>}
   errorFallback={<p role="alert">Unable to load snippet.</p>}
-  onLoaded={(snippet) => console.log('Rendered', snippet.slug)}
+  onLoaded={(snippet) => console.log("Rendered", snippet.slug)}
 />;
 ```
 
@@ -88,18 +89,19 @@ Features:
 When using Next.js, Remix, or another SSR framework, provide a server-safe fetch implementation:
 
 ```tsx
-import fetch from 'node-fetch';
-import { SnippetProvider } from '@mzebley/mark-down-react';
+import fetch from "node-fetch";
+import { SnippetProvider } from "@mzebley/mark-down-react";
 
 <SnippetProvider
   options={{
-    manifest: () => import('../snippets-index.json'),
-    fetch: (url) => fetch(url).then((response) => {
-      if (!response.ok) {
-        throw new Error(`Request failed with status ${response.status}`);
-      }
-      return response;
-    }),
+    manifest: () => import("../snippets-index.json"),
+    fetch: (url) =>
+      fetch(url).then((response) => {
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+        return response;
+      }),
   }}
 >
   {children}

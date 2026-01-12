@@ -14,7 +14,9 @@ export function normalizeSlug(input: string): string {
     .replace(LEADING_TRAILING_DASH, "");
 
   if (!normalized) {
-    throw new Error(`Slug '${input}' does not contain any alphanumeric characters`);
+    throw new Error(
+      `Slug '${input}' does not contain any alphanumeric characters`,
+    );
   }
 
   return normalized;

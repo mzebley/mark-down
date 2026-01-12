@@ -1,6 +1,6 @@
 {
   "name": "@mzebley/mark-down-cli",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "mark↓ CLI for building snippet manifests",
   "type": "module",
   "bin": {
@@ -9,7 +9,9 @@
   "main": "dist/index.mjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },

@@ -14,6 +14,11 @@ export class ManifestLoadError extends Error {
   constructor(message: string, cause?: unknown) {
     super(message);
     this.name = "ManifestLoadError";
-    this.cause = cause instanceof Error ? cause : cause ? new Error(String(cause)) : undefined;
+    this.cause =
+      cause instanceof Error
+        ? cause
+        : cause
+          ? new Error(String(cause))
+          : undefined;
   }
 }

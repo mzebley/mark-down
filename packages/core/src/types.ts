@@ -1,3 +1,5 @@
+import type { SanitizeOptions } from "./sanitize";
+
 export interface SnippetMeta {
   slug: string;
   title?: string;
@@ -46,4 +48,5 @@ export interface SnippetClientOptions {
   cache?: boolean;
   verbose?: boolean;
   render?: (markdown: string) => string | Promise<string>;
+  sanitize?: SanitizeOptions;
 }

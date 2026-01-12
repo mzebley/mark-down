@@ -10,7 +10,8 @@ export interface FrontMatterResult {
   hasFrontMatter: boolean;
 }
 
-const FRONT_MATTER_PATTERN = /^(?:\uFEFF)?[ \t\r\n]*---\s*\r?\n([\s\S]*?)\r?\n---\s*\r?\n?/;
+const FRONT_MATTER_PATTERN =
+  /^(?:\uFEFF)?[ \t\r\n]*---\s*\r?\n([\s\S]*?)\r?\n---\s*\r?\n?/;
 
 export function parseFrontMatter(raw: string): FrontMatterResult {
   const match = FRONT_MATTER_PATTERN.exec(raw);
@@ -27,7 +28,12 @@ export function parseFrontMatter(raw: string): FrontMatterResult {
   }
 
   if (!isRecord(data)) {
-    return { content: raw.slice(match[0].length), meta: {}, extra: {}, hasFrontMatter: true };
+    return {
+      content: raw.slice(match[0].length),
+      meta: {},
+      extra: {},
+      hasFrontMatter: true,
+    };
   }
 
   const { known, extra } = splitFrontMatter(data);
@@ -37,13 +43,14 @@ export function parseFrontMatter(raw: string): FrontMatterResult {
     meta: known.meta,
     extra,
     slug: known.slug,
-    hasFrontMatter: true
+    hasFrontMatter: true,
   };
 }
 
-function splitFrontMatter(
-  data: Record<string, unknown>
-): { known: { meta: Partial<SnippetMeta>; slug?: string }; extra: Record<string, unknown> } {
+function splitFrontMatter(data: Record<string, unknown>): {
+  known: { meta: Partial<SnippetMeta>; slug?: string };
+  extra: Record<string, unknown>;
+} {
   const meta: Partial<SnippetMeta> = {};
   const extra: Record<string, unknown> = {};
   let slug: string | undefined;
@@ -107,5 +114,9 @@ function normalizeTags(value: unknown): string[] | undefined {
 }
 
 function isRecord(candidate: unknown): candidate is Record<string, unknown> {
-  return Boolean(candidate) && typeof candidate === "object" && !Array.isArray(candidate);
+  return (
+    Boolean(candidate) &&
+    typeof candidate === "object" &&
+    !Array.isArray(candidate)
+  );
 }

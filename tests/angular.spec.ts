@@ -4,7 +4,7 @@ import {
   MarkdownSnippetService,
   SNIPPET_CLIENT,
   SNIPPET_CLIENT_OPTIONS,
-  provideSnippetClient
+  provideSnippetClient,
 } from "../packages/core/src/angular/index";
 import { SnippetClient } from "../packages/core/src/snippet-client";
 import type { Snippet, SnippetMeta } from "../packages/core/src/types";
@@ -14,16 +14,18 @@ const BASE_SNIPPET: Snippet = {
   path: "example.md",
   html: "<p>example</p>",
   raw: "example",
-  group: null
+  group: null,
 };
 
-function createStubClient(overrides: Partial<SnippetClient> = {}): SnippetClient {
+function createStubClient(
+  overrides: Partial<SnippetClient> = {},
+): SnippetClient {
   const manifest: SnippetMeta[] = [
     {
       slug: "example",
       path: "example.md",
-      group: "docs"
-    }
+      group: "docs",
+    },
   ];
 
   return {
@@ -35,15 +37,19 @@ function createStubClient(overrides: Partial<SnippetClient> = {}): SnippetClient
     getHtml: vi.fn(async () => BASE_SNIPPET.html),
     invalidate: vi.fn(),
     invalidateSlug: vi.fn(),
-    ...overrides
+    ...overrides,
   } as unknown as SnippetClient;
 }
 
 describe("Angular adapter", () => {
   it("exposes providers that bootstrap a SnippetClient", () => {
     const providers = provideSnippetClient({ manifest: [] });
-    const optionsProvider = providers.find((provider) => provider.provide === SNIPPET_CLIENT_OPTIONS);
-    const clientProvider = providers.find((provider) => provider.provide === SNIPPET_CLIENT);
+    const optionsProvider = providers.find(
+      (provider) => provider.provide === SNIPPET_CLIENT_OPTIONS,
+    );
+    const clientProvider = providers.find(
+      (provider) => provider.provide === SNIPPET_CLIENT,
+    );
 
     expect(optionsProvider?.useValue).toMatchObject({ manifest: [] });
     expect(typeof clientProvider?.useFactory).toBe("function");
@@ -57,7 +63,10 @@ describe("Angular adapter", () => {
     const service = new MarkdownSnippetService(stubClient);
 
     const stream = service.get("example");
-    const [value1, value2] = await Promise.all([firstValueFrom(stream), firstValueFrom(stream)]);
+    const [value1, value2] = await Promise.all([
+      firstValueFrom(stream),
+      firstValueFrom(stream),
+    ]);
 
     expect(value1.slug).toBe("example");
     expect(value2.slug).toBe("example");

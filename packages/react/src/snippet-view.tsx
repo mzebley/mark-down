@@ -16,10 +16,18 @@ export function SnippetView({
   className,
   loadingFallback = "Loading…",
   errorFallback = "Unable to load snippet",
-  onLoaded
+  onLoaded,
 }: SnippetViewProps) {
   const state = useSnippet(slug);
-  const safeHtml = useMemo(() => (state.snippet ? DOMPurify.sanitize(state.snippet.html) : undefined), [state.snippet]);
+  const safeHtml = useMemo(() => {
+    if (!state.snippet) {
+      return undefined;
+    }
+    if (typeof window === "undefined") {
+      return state.snippet.html;
+    }
+    return DOMPurify.sanitize(state.snippet.html);
+  }, [state.snippet]);
 
   useEffect(() => {
     onLoaded?.(state.snippet);
@@ -37,5 +45,10 @@ export function SnippetView({
     return <div className={className}>Snippet not found</div>;
   }
 
-  return <div className={className} dangerouslySetInnerHTML={{ __html: safeHtml ?? "" }} />;
+  return (
+    <div
+      className={className}
+      dangerouslySetInnerHTML={{ __html: safeHtml ?? "" }}
+    />
+  );
 }

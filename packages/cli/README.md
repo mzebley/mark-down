@@ -1,5 +1,6 @@
 # mark↓ CLI
-*(published as `@mzebley/mark-down-cli`)*
+
+_(published as `@mzebley/mark-down-cli`)_
 
 `mark-down` is the command-line companion to the mark↓ runtime. It scans Markdown snippets, parses YAML front matter, and emits a sorted `snippets-index.json` manifest consumed by [the core client](../core/README.md). For a full project overview, see the [monorepo README](../../README.md).
 
@@ -59,7 +60,7 @@ The CLI walks the directory tree, gathers front matter, and writes `snippets-ind
 - Resolves snippet metadata from `snippets-index.json` (auto-detected next to the HTML file or provided via `--manifest`).
 - Loads Markdown from disk, strips front matter, and renders HTML with the same `marked` pipeline as the runtime.
 - Injects the rendered HTML as the element `innerHTML` and writes the result to `dist/<file>.html` by default.
-- Use `--outDir` to change the output directory or `--inPlace` to overwrite the source file.
+- Use `--outDir` to change the output directory, `--inPlace` to overwrite the source file, or `--sanitize` to apply HTML sanitization.
 - Unknown slugs are left untouched and logged as warnings. Table-of-contents generation remains a runtime concern.
 
 ## Configuration options
@@ -73,6 +74,7 @@ The CLI stays intentionally small so it can be composed inside any toolchain. Cu
 - `--manifest <path>` – path to `snippets-index.json`. Defaults to the file next to `<inputHtml>`.
 - `--outDir <dir>` – output directory for compiled HTML. Defaults to `dist`.
 - `--inPlace` – overwrite the input HTML file instead of writing to `dist/`.
+- `--sanitize [policy]` – sanitize rendered HTML (`default`, `strict`, or `permissive`). Omitting the policy defaults to `default`.
 
 Add flags directly after the command (`mark-down build content/snippets -o public/snippets-index.json`). Package scripts can capture these options as well.
 

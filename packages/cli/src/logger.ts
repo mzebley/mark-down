@@ -7,13 +7,17 @@ export interface LogFields {
   [key: string]: unknown;
 }
 
-export function logEvent(level: LogLevel, event: string, fields: LogFields = {}) {
+export function logEvent(
+  level: LogLevel,
+  event: string,
+  fields: LogFields = {},
+) {
   const entry = {
     brand,
     level,
     event,
     timestamp: new Date().toISOString(),
-    ...fields
+    ...fields,
   };
   const output = `${JSON.stringify(entry)}\n`;
   const stream = level === "error" ? process.stderr : process.stdout;

@@ -1,20 +1,33 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { load as loadHtml } from "cheerio";
-import { parseFrontMatter, renderMarkdown, type SnippetMeta } from "@mzebley/mark-down";
+import {
+  parseFrontMatter,
+  renderMarkdown,
+  sanitizeMarkup,
+  type SanitizeOptions,
+  type SnippetMeta,
+} from "@mzebley/mark-down";
 import { logEvent } from "./logger.js";
 
 export interface CompilePageOptions {
   manifest?: string;
   outDir?: string;
   inPlace?: boolean;
+  sanitize?: SanitizeOptions;
 }
 
 const DEFAULT_OUT_DIR = "dist";
 
-export async function compilePage(inputHtml: string, options: CompilePageOptions = {}): Promise<string> {
+export async function compilePage(
+  inputHtml: string,
+  options: CompilePageOptions = {},
+): Promise<string> {
   const sourcePath = path.resolve(inputHtml);
-  await assertExists(sourcePath, `Input HTML file not found at '${inputHtml}'.`);
+  await assertExists(
+    sourcePath,
+    `Input HTML file not found at '${inputHtml}'.`,
+  );
 
   const manifestPath = await resolveManifestPath(sourcePath, options.manifest);
   const manifestDir = path.dirname(manifestPath);
@@ -54,10 +67,16 @@ export async function compilePage(inputHtml: string, options: CompilePageOptions
       body = frontMatter.content;
       frontMatterSlug = frontMatter.slug;
     } catch (error) {
-      console.warn(`mark↓: failed to parse front matter for '${entry.path}'`, error);
+      console.warn(
+        `mark↓: failed to parse front matter for '${entry.path}'`,
+        error,
+      );
     }
 
-    const html = renderMarkdown(body);
+    let html = renderMarkdown(body);
+    if (options.sanitize) {
+      html = sanitizeMarkup(html, options.sanitize);
+    }
     element.html(html);
 
     if (!element.attr("id")) {
@@ -65,7 +84,9 @@ export async function compilePage(inputHtml: string, options: CompilePageOptions
     }
   }
 
-  const outputDir = options.inPlace ? path.dirname(sourcePath) : path.resolve(options.outDir ?? DEFAULT_OUT_DIR);
+  const outputDir = options.inPlace
+    ? path.dirname(sourcePath)
+    : path.resolve(options.outDir ?? DEFAULT_OUT_DIR);
   if (!options.inPlace) {
     await fs.mkdir(outputDir, { recursive: true });
   }
@@ -80,11 +101,17 @@ export async function compilePage(inputHtml: string, options: CompilePageOptions
   return outputPath;
 }
 
-async function resolveManifestPath(inputHtml: string, manifestFlag?: string): Promise<string> {
+async function resolveManifestPath(
+  inputHtml: string,
+  manifestFlag?: string,
+): Promise<string> {
   const manifestPath = manifestFlag
     ? path.resolve(manifestFlag)
     : path.join(path.dirname(path.resolve(inputHtml)), "snippets-index.json");
-  await assertExists(manifestPath, `Manifest file not found at '${manifestPath}'.`);
+  await assertExists(
+    manifestPath,
+    `Manifest file not found at '${manifestPath}'.`,
+  );
   return manifestPath;
 }
 
@@ -93,7 +120,9 @@ async function loadManifest(manifestPath: string): Promise<SnippetMeta[]> {
   try {
     raw = await fs.readFile(manifestPath, "utf8");
   } catch (error) {
-    throw new Error(`Failed to read manifest at '${manifestPath}': ${String(error)}`);
+    throw new Error(
+      `Failed to read manifest at '${manifestPath}': ${String(error)}`,
+    );
   }
 
   try {
@@ -103,7 +132,9 @@ async function loadManifest(manifestPath: string): Promise<SnippetMeta[]> {
     }
     return parsed as SnippetMeta[];
   } catch (error) {
-    throw new Error(`Failed to parse manifest at '${manifestPath}': ${String(error)}`);
+    throw new Error(
+      `Failed to parse manifest at '${manifestPath}': ${String(error)}`,
+    );
   }
 }
 

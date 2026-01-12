@@ -3,7 +3,9 @@ installBufferShim();
 export * from "./index";
 
 function installBufferShim() {
-  const globalRef = globalThis as typeof globalThis & { Buffer?: BufferConstructor };
+  const globalRef = globalThis as typeof globalThis & {
+    Buffer?: BufferConstructor;
+  };
 
   if (typeof globalRef.Buffer !== "undefined") {
     return;
@@ -13,7 +15,9 @@ function installBufferShim() {
   const textDecoder = new TextDecoder();
 
   class BrowserBuffer extends Uint8Array {
-    constructor(value: number | ArrayBufferLike | ArrayBufferView | ArrayLike<number>) {
+    constructor(
+      value: number | ArrayBufferLike | ArrayBufferView | ArrayLike<number>,
+    ) {
       if (typeof value === "number") {
         super(value);
         return;
@@ -26,7 +30,12 @@ function installBufferShim() {
 
       if (ArrayBuffer.isView(value)) {
         super(
-          new Uint8Array(value.buffer.slice(value.byteOffset, value.byteOffset + value.byteLength))
+          new Uint8Array(
+            value.buffer.slice(
+              value.byteOffset,
+              value.byteOffset + value.byteLength,
+            ),
+          ),
         );
         return;
       }
@@ -36,16 +45,23 @@ function installBufferShim() {
 
     override toString(encoding: BufferEncoding = "utf-8") {
       if (encoding !== "utf-8" && encoding !== "utf8") {
-        throw new Error(`Unsupported encoding '${encoding}' in browser Buffer shim`);
+        throw new Error(
+          `Unsupported encoding '${encoding}' in browser Buffer shim`,
+        );
       }
       return textDecoder.decode(this);
     }
   }
 
-  const from = (value: string | ArrayLike<number> | BufferSource, encoding: BufferEncoding = "utf-8") => {
+  const from = (
+    value: string | ArrayLike<number> | BufferSource,
+    encoding: BufferEncoding = "utf-8",
+  ) => {
     if (typeof value === "string") {
       if (encoding !== "utf-8" && encoding !== "utf8") {
-        throw new Error(`Unsupported encoding '${encoding}' in browser Buffer shim`);
+        throw new Error(
+          `Unsupported encoding '${encoding}' in browser Buffer shim`,
+        );
       }
       return new BrowserBuffer(textEncoder.encode(value));
     }
@@ -62,7 +78,9 @@ function installBufferShim() {
       return new BrowserBuffer(Array.from(value as ArrayLike<number>));
     }
 
-    throw new TypeError("Unsupported input passed to Buffer.from in browser shim");
+    throw new TypeError(
+      "Unsupported input passed to Buffer.from in browser shim",
+    );
   };
 
   const alloc = (size: number, fill?: number | string) => {
@@ -89,14 +107,25 @@ function installBufferShim() {
 
   const concat = (buffers: ArrayLike<Uint8Array>, totalLength?: number) => {
     const sanitized = Array.from(buffers, (buffer) =>
-      buffer instanceof BrowserBuffer ? buffer : new BrowserBuffer(buffer)
+      buffer instanceof BrowserBuffer ? buffer : new BrowserBuffer(buffer),
     );
-    const length = totalLength ?? sanitized.reduce((acc, current) => acc + current.length, 0);
+    const length =
+      totalLength ??
+      sanitized.reduce((acc, current) => acc + current.length, 0);
+    if (length < 0) {
+      throw new RangeError("Invalid Buffer length");
+    }
     const result = new BrowserBuffer(length);
     let offset = 0;
     for (const buffer of sanitized) {
-      result.set(buffer, offset);
-      offset += buffer.length;
+      const remaining = length - offset;
+      if (remaining <= 0) {
+        break;
+      }
+      const slice =
+        buffer.length > remaining ? buffer.subarray(0, remaining) : buffer;
+      result.set(slice, offset);
+      offset += slice.length;
     }
     return result;
   };
@@ -116,10 +145,12 @@ function installBufferShim() {
 
   Object.defineProperties(BrowserBuffer, {
     from: { value: from },
-    isBuffer: { value: (candidate: unknown) => candidate instanceof BrowserBuffer },
+    isBuffer: {
+      value: (candidate: unknown) => candidate instanceof BrowserBuffer,
+    },
     alloc: { value: alloc },
     concat: { value: concat },
-    byteLength: { value: byteLength }
+    byteLength: { value: byteLength },
   });
 
   BrowserBuffer.prototype.valueOf = function valueOf() {
@@ -128,8 +159,12 @@ function installBufferShim() {
 
   globalRef.Buffer = BrowserBuffer as unknown as BufferConstructor;
 
-  if (typeof window !== "undefined" && typeof (window as typeof globalThis).Buffer === "undefined") {
-    (window as typeof globalThis & { Buffer?: BufferConstructor }).Buffer = globalRef.Buffer;
+  if (
+    typeof window !== "undefined" &&
+    typeof (window as typeof globalThis).Buffer === "undefined"
+  ) {
+    (window as typeof globalThis & { Buffer?: BufferConstructor }).Buffer =
+      globalRef.Buffer;
   }
 }
 
@@ -137,5 +172,8 @@ function isArrayBufferLike(value: unknown): value is ArrayBufferLike {
   if (value instanceof ArrayBuffer) {
     return true;
   }
-  return typeof SharedArrayBuffer !== "undefined" && value instanceof SharedArrayBuffer;
+  return (
+    typeof SharedArrayBuffer !== "undefined" &&
+    value instanceof SharedArrayBuffer
+  );
 }

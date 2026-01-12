@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ManifestLoadError, SnippetClient, SnippetNotFoundError } from "../packages/core/src/snippet-client";
+import {
+  ManifestLoadError,
+  SnippetClient,
+  SnippetNotFoundError,
+} from "../packages/core/src/snippet-client";
 import type { SnippetMeta } from "../packages/core/src/types";
 
 const BASE_MANIFEST: SnippetMeta[] = [
@@ -7,15 +11,15 @@ const BASE_MANIFEST: SnippetMeta[] = [
     slug: "introduction",
     path: "guides/introduction.md",
     group: "guides",
-    title: "Introduction"
+    title: "Introduction",
   },
   {
     slug: "button",
     path: "components/button.md",
     group: "components",
     type: "component",
-    tags: ["ui", "interactive"]
-  }
+    tags: ["ui", "interactive"],
+  },
 ];
 
 describe("SnippetClient", () => {
@@ -40,7 +44,7 @@ describe("SnippetClient", () => {
     const client = new SnippetClient({
       manifest: "/assets/snippets/manifest.json",
       base: "/assets/snippets/content",
-      fetch: fetchSpy
+      fetch: fetchSpy,
     });
 
     const snippet = await client.get("introduction");
@@ -49,28 +53,32 @@ describe("SnippetClient", () => {
     expect(snippet.tags).toEqual(["docs", "start"]);
     expect(snippet.extra).toMatchObject({ custom: true });
     expect(fetchSpy).toHaveBeenCalledWith("/assets/snippets/manifest.json");
-    expect(fetchSpy).toHaveBeenCalledWith("/assets/snippets/content/guides/introduction.md");
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "/assets/snippets/content/guides/introduction.md",
+    );
   });
 
   it("warns when front matter slug differs and verbose enabled", async () => {
     const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    fetchSpy.mockResolvedValueOnce(JSON.stringify([
-      {
-        slug: "about",
-        path: "company/about.md"
-      }
-    ]));
+    fetchSpy.mockResolvedValueOnce(
+      JSON.stringify([
+        {
+          slug: "about",
+          path: "company/about.md",
+        },
+      ]),
+    );
     fetchSpy.mockResolvedValueOnce("---\nslug: ABOUT-US\n---\nContent");
 
     const client = new SnippetClient({
       manifest: "https://cdn.example.com/manifest.json",
       fetch: fetchSpy,
-      verbose: true
+      verbose: true,
     });
 
     await client.get("about");
     expect(consoleSpy).toHaveBeenCalledWith(
-      expect.stringContaining("Front-matter slug 'ABOUT-US'")
+      expect.stringContaining("Front-matter slug 'ABOUT-US'"),
     );
     consoleSpy.mockRestore();
   });
@@ -80,23 +88,28 @@ describe("SnippetClient", () => {
       JSON.stringify([
         {
           slug: "who-we-are",
-          path: "company/who-we-are.md"
-        }
-      ])
+          path: "company/who-we-are.md",
+        },
+      ]),
     );
     fetchSpy.mockResolvedValueOnce("# Team");
 
     const client = new SnippetClient({
       manifest: "https://cdn.example.com/content/manifest.json",
-      fetch: fetchSpy
+      fetch: fetchSpy,
     });
 
     await client.get("who-we-are");
-    expect(fetchSpy).toHaveBeenLastCalledWith("https://cdn.example.com/content/company/who-we-are.md");
+    expect(fetchSpy).toHaveBeenLastCalledWith(
+      "https://cdn.example.com/content/company/who-we-are.md",
+    );
   });
 
   it("supports cache toggling and invalidation", async () => {
-    const client = new SnippetClient({ manifest: BASE_MANIFEST, fetch: fetchSpy });
+    const client = new SnippetClient({
+      manifest: BASE_MANIFEST,
+      fetch: fetchSpy,
+    });
     await client.get("button");
     await client.get("button");
     expect(fetchSpy).toHaveBeenCalledTimes(1);
@@ -114,7 +127,7 @@ describe("SnippetClient", () => {
     const client = new SnippetClient({
       manifest: BASE_MANIFEST,
       fetch: fetchSpy,
-      cache: false
+      cache: false,
     });
 
     await client.get("button");
@@ -123,7 +136,10 @@ describe("SnippetClient", () => {
   });
 
   it("supports list helpers and search filters", async () => {
-    const client = new SnippetClient({ manifest: BASE_MANIFEST, fetch: fetchSpy });
+    const client = new SnippetClient({
+      manifest: BASE_MANIFEST,
+      fetch: fetchSpy,
+    });
 
     const all = await client.listAll();
     expect(all).toHaveLength(2);
@@ -138,17 +154,27 @@ describe("SnippetClient", () => {
     const tagMatch = await client.search({ tags: ["ui"], tagsMode: "any" });
     expect(tagMatch).toHaveLength(1);
 
-    const tagAll = await client.search({ tags: ["ui", "interactive"], tagsMode: "all" });
+    const tagAll = await client.search({
+      tags: ["ui", "interactive"],
+      tagsMode: "all",
+    });
     expect(tagAll).toHaveLength(1);
 
-    const noMatch = await client.search({ tags: ["ui", "docs"], tagsMode: "all" });
+    const noMatch = await client.search({
+      tags: ["ui", "docs"],
+      tagsMode: "all",
+    });
     expect(noMatch).toHaveLength(0);
   });
 
   it("throws SnippetNotFoundError for unknown slug", async () => {
-    const client = new SnippetClient({ manifest: BASE_MANIFEST, fetch: fetchSpy });
-    await expect(client.get("missing"))
-      .rejects.toBeInstanceOf(SnippetNotFoundError);
+    const client = new SnippetClient({
+      manifest: BASE_MANIFEST,
+      fetch: fetchSpy,
+    });
+    await expect(client.get("missing")).rejects.toBeInstanceOf(
+      SnippetNotFoundError,
+    );
   });
 
   it("throws ManifestLoadError when manifest entries are invalid", async () => {
@@ -156,10 +182,10 @@ describe("SnippetClient", () => {
       manifest: [
         {
           // @ts-expect-error intentionally invalid
-          path: "missing-slug.md"
-        }
+          path: "missing-slug.md",
+        },
       ],
-      fetch: fetchSpy
+      fetch: fetchSpy,
     });
 
     await expect(client.listAll()).rejects.toBeInstanceOf(ManifestLoadError);
@@ -174,7 +200,7 @@ describe("SnippetClient", () => {
         }
         return fetchSpy(url);
       },
-      frontMatter: false
+      frontMatter: false,
     });
 
     const snippet = await client.get("introduction");
@@ -186,10 +212,29 @@ describe("SnippetClient", () => {
     const client = new SnippetClient({
       manifest: BASE_MANIFEST,
       fetch: fetchSpy,
-      render: (markdown) => `<custom>${markdown}</custom>`
+      render: (markdown) => `<custom>${markdown}</custom>`,
     });
 
     const snippet = await client.get("button");
     expect(snippet.html).toContain("<custom>");
+  });
+
+  it("sanitizes rendered html when enabled", async () => {
+    const htmlFetch = vi.fn(async (url: string) => {
+      if (url.endsWith("manifest.json")) {
+        return JSON.stringify(BASE_MANIFEST);
+      }
+      return "<script>alert(1)</script><strong>Safe</strong>";
+    });
+
+    const client = new SnippetClient({
+      manifest: "/assets/snippets/manifest.json",
+      fetch: htmlFetch,
+      sanitize: { policy: "strict" },
+    });
+
+    const snippet = await client.get("button");
+    expect(snippet.html).toContain("<strong>Safe</strong>");
+    expect(snippet.html).not.toContain("<script>");
   });
 });

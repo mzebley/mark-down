@@ -6,7 +6,7 @@ import {
   Input,
   OnChanges,
   Output,
-  inject
+  inject,
 } from "@angular/core";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { BehaviorSubject, Observable, of } from "rxjs";
@@ -27,7 +27,7 @@ import DOMPurify from "dompurify";
       <div class="mark-down-snippet--loading">Loading snippet…</div>
     </ng-template>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SnippetViewComponent implements OnChanges {
   private readonly slug$ = new BehaviorSubject<string | null>(null);
@@ -39,10 +39,12 @@ export class SnippetViewComponent implements OnChanges {
 
   private readonly snippet$: Observable<Snippet | null> = this.slug$.pipe(
     switchMap((slug) =>
-      slug ? this.snippets.get(slug).pipe(catchError(() => of(null))) : of(null)
+      slug
+        ? this.snippets.get(slug).pipe(catchError(() => of(null)))
+        : of(null),
     ),
     tap((snippet) => this.loaded.emit(snippet ?? undefined)),
-    shareReplay({ bufferSize: 1, refCount: true })
+    shareReplay({ bufferSize: 1, refCount: true }),
   );
 
   readonly content$: Observable<SafeHtml | null> = this.snippet$.pipe(
@@ -50,9 +52,12 @@ export class SnippetViewComponent implements OnChanges {
       if (!snippet) {
         return null;
       }
+      if (typeof window === "undefined") {
+        return this.sanitizer.bypassSecurityTrustHtml(snippet.html);
+      }
       const sanitized = DOMPurify.sanitize(snippet.html);
       return this.sanitizer.bypassSecurityTrustHtml(sanitized);
-    })
+    }),
   );
 
   ngOnChanges(): void {

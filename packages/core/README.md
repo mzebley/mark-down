@@ -1,5 +1,6 @@
 # mark↓ Core Runtime
-*(published as `@mzebley/mark-down`)*
+
+_(published as `@mzebley/mark-down`)_
 
 This package provides the framework-agnostic `SnippetClient` and supporting types used to fetch, cache, and render Markdown snippets at runtime. For a monorepo overview visit the [root README](../../README.md).
 
@@ -54,8 +55,11 @@ The client lazily loads the manifest when first needed, then fetches Markdown fi
 - **`cache`** (`boolean`, default `true`) – enable or disable per-snippet and manifest memoisation.
 - **`verbose`** (`boolean`) – log helpful warnings (for example, slug mismatches) during development.
 - **`render`** (`(markdown: string) => string | Promise<string>`) – override the default `marked` renderer when you need custom HTML output.
+- **`sanitize`** (`{ policy?: "default" | "strict" | "permissive"; config?: SanitizeHtmlOptions }`) – optionally sanitize rendered HTML before it is returned.
 
 All options are optional except `manifest`. Results are rendered with `marked` by default; override at the application level if you need a different Markdown pipeline.
+
+`sanitize` is opt-in and uses [`sanitize-html`](https://github.com/apostrophecms/sanitize-html) under the hood. Use the `policy` presets for common Markdown output or override the `config` to tweak allowed tags/attributes. The React and Angular adapters already sanitize before rendering; enabling `sanitize` with those adapters is usually redundant.
 
 ## Working with snippets
 
@@ -80,12 +84,13 @@ import { SnippetClient } from "@mzebley/mark-down";
 
 const client = new SnippetClient({
   manifest: () => import("./snippets-index.json"),
-  fetch: (url) => fetch(url).then((response) => {
-    if (!response.ok) {
-      throw new Error(`Request failed with status ${response.status}`);
-    }
-    return response;
-  }),
+  fetch: (url) =>
+    fetch(url).then((response) => {
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+      return response;
+    }),
 });
 ```
 
@@ -145,11 +150,7 @@ Host the UMD file yourself or load it from a CDN—no build tooling required.
 Write plain Markdown directly in your HTML. The helper finds `[data-markdown]` blocks by default.
 
 ```html
-<div data-markdown>
-# Hello
-
-This is inline markdown with no build step.
-</div>
+<div data-markdown># Hello This is inline markdown with no build step.</div>
 
 <script src="path/to/mark-down-inline.umd.js"></script>
 <script>
@@ -167,16 +168,8 @@ You can optionally prepend YAML front matter to provide metadata for each block.
 
 ```html
 <div data-markdown>
----
-slug: intro
-title: Introduction
-tags: [hero]
-variant: lead
----
-
-# Introduction
-
-This block has metadata.
+  --- slug: intro title: Introduction tags: [hero] variant: lead --- #
+  Introduction This block has metadata.
 </div>
 ```
 
@@ -196,6 +189,7 @@ enhanceInlineMarkdown({
   selector?: string; // defaults to "[data-markdown]"
   processFrontMatter?: boolean; // defaults to true
   applyMetaToDom?: boolean; // defaults to true
+  sanitize?: { policy?: "default" | "strict" | "permissive"; config?: SanitizeHtmlOptions };
 });
 ```
 

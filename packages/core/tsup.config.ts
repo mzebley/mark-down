@@ -6,23 +6,29 @@ export default defineConfig([
       index: "src/index.ts",
       slug: "src/slug.ts",
       inline: "src/inline.ts",
-      "angular/index": "src/angular/index.ts"
+      "angular/index": "src/angular/index.ts",
     },
     format: ["esm"],
     dts: true,
     sourcemap: true,
     clean: true,
     target: "es2020",
-    external: ["@angular/core", "@angular/common", "@angular/router", "@angular/platform-browser", "rxjs"],
+    external: [
+      "@angular/core",
+      "@angular/common",
+      "@angular/router",
+      "@angular/platform-browser",
+      "rxjs",
+    ],
     outExtension() {
       return {
-        js: ".js"
+        js: ".js",
       };
-    }
+    },
   },
   {
     entry: {
-      browser: "src/browser.ts"
+      browser: "src/browser.ts",
     },
     format: ["esm"],
     dts: true,
@@ -33,13 +39,13 @@ export default defineConfig([
     splitting: false,
     outExtension() {
       return {
-        js: ".js"
+        js: ".js",
       };
-    }
+    },
   },
   {
     entry: {
-      "mark-down-inline": "src/inline.ts"
+      "mark-down-inline": "src/inline.ts",
     },
     format: ["iife"],
     globalName: "markDownInline",
@@ -52,8 +58,8 @@ export default defineConfig([
     splitting: false,
     outExtension() {
       return {
-        js: ".umd.js"
+        js: ".umd.js",
       };
-    }
-  }
+    },
+  },
 ]);

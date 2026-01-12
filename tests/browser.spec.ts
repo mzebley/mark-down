@@ -26,13 +26,14 @@ describe("browser bundle", () => {
       {
         slug: "browser-test",
         path: "/snippets/browser-test.md",
-        group: "docs"
-      }
+        group: "docs",
+      },
     ];
 
     const client = new SnippetClient({
       manifest,
-      fetch: async () => "---\ntitle: From Browser\n---\nHello from the browser bundle."
+      fetch: async () =>
+        "---\ntitle: From Browser\n---\nHello from the browser bundle.",
     });
 
     const snippet = await client.get("browser-test");

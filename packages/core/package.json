@@ -1,10 +1,12 @@
 {
   "name": "@mzebley/mark-down",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "mark↓ core runtime and shared utilities",
   "type": "module",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -41,6 +43,7 @@
   },
   "dependencies": {
     "marked": "^11.1.0",
+    "sanitize-html": "^2.17.0",
     "yaml": "^2.4.1"
   },
   "sideEffects": false

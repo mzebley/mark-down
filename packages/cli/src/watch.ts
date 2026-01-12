@@ -7,7 +7,7 @@ export async function watch(sourceDir: string, outputPath?: string) {
   const cwd = path.resolve(sourceDir);
   logEvent("info", "watch.start", {
     directory: cwd,
-    outputPath: outputPath ?? path.join(cwd, "snippets-index.json")
+    outputPath: outputPath ?? path.join(cwd, "snippets-index.json"),
   });
   await rebuild(cwd, outputPath);
 
@@ -16,8 +16,8 @@ export async function watch(sourceDir: string, outputPath?: string) {
     ignoreInitial: true,
     awaitWriteFinish: {
       stabilityThreshold: 200,
-      pollInterval: 50
-    }
+      pollInterval: 50,
+    },
   });
 
   const schedule = debounce(async () => {
@@ -30,26 +30,29 @@ export async function watch(sourceDir: string, outputPath?: string) {
   });
 }
 
-async function rebuild(sourceDir: string, outputPath?: string): Promise<BuildResult | void> {
+async function rebuild(
+  sourceDir: string,
+  outputPath?: string,
+): Promise<BuildResult | void> {
   try {
     const result = await buildManifestFile({ sourceDir, outputPath });
     logEvent("info", "manifest.updated", {
       outputPath: result.outputPath,
-      snippetCount: result.manifest.length
+      snippetCount: result.manifest.length,
     });
     return result;
   } catch (error) {
     const err = error as Error;
     logEvent("error", "manifest.update_failed", {
       message: err.message,
-      stack: err.stack
+      stack: err.stack,
     });
   }
 }
 
 function debounce<T extends (...args: unknown[]) => Promise<unknown> | void>(
   fn: T,
-  delay: number
+  delay: number,
 ) {
   let timer: NodeJS.Timeout | null = null;
   return (...args: Parameters<T>) => {

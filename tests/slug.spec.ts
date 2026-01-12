@@ -3,12 +3,13 @@ import { normalizeSlug } from "../packages/core/src/slug";
 
 describe("normalizeSlug", () => {
   it("normalizes spaces and punctuation", () => {
-    expect(normalizeSlug("Hello World!"))
-      .toEqual("hello-world");
+    expect(normalizeSlug("Hello World!")).toEqual("hello-world");
   });
 
   it("collapses repeated separators", () => {
-    expect(normalizeSlug("Fancy___Snippet---Name")).toEqual("fancy-snippet-name");
+    expect(normalizeSlug("Fancy___Snippet---Name")).toEqual(
+      "fancy-snippet-name",
+    );
   });
 
   it("trims leading and trailing dashes", () => {

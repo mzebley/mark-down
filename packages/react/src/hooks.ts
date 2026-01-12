@@ -11,7 +11,7 @@ export interface UseSnippetResult {
 export function useSnippet(slug?: string | null): UseSnippetResult {
   const client = useSnippetClient();
   const [result, setResult] = useState<UseSnippetResult>(() => ({
-    loading: Boolean(slug)
+    loading: Boolean(slug),
   }));
 
   useEffect(() => {
