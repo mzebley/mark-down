@@ -36,7 +36,7 @@ export async function compilePage(
   const rawHtml = await fs.readFile(sourcePath, "utf8");
   const doctypeMatch = rawHtml.match(/^(<!doctype[^>]*>\s*)/i);
   const doctype = doctypeMatch?.[1] ?? "";
-  const dom = loadHtml(rawHtml, { decodeEntities: false });
+  const dom = loadHtml(rawHtml);
 
   const targets = dom("[data-snippet]").toArray();
   for (const node of targets) {

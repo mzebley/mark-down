@@ -102,7 +102,7 @@ npx mark-down build content/snippets
 Key behaviours:
 
 - Discovers Markdown recursively, parses front matter with `yaml`, normalizes slugs, removes drafts, and sorts output.
-- Emits `snippets-index.json` in the source directory by default (pass `--outDir` to change it; see the [CLI docs](packages/cli/README.md)).
+- Emits `snippets-index.json` in the source directory by default (pass `-o`/`--output` to change it; see the [CLI docs](packages/cli/README.md)).
 - Returns exit code `2` if duplicate slugs are encountered.
 - Use `mark-down watch content/snippets` to rebuild automatically while authoring.
 
@@ -128,6 +128,14 @@ npx mark-down compile-page www/index.html --manifest www/snippets-index.json --o
 ```
 
 The command reads the HTML, loads snippets from the manifest on disk, strips front matter, renders Markdown with the same pipeline used at runtime, and writes a fully populated HTML file to `dist/index.html`. Pass `--inPlace` to overwrite the source file or `--sanitize` to apply the built-in HTML sanitizer. Table-of-contents or other runtime-only transforms still happen client-side.
+
+## Security model
+
+mark↓ intentionally supports rendering untrusted or unsanitized snippet HTML when you choose to do so. This is useful for trusted content pipelines, migration scenarios, and advanced formatter integrations.
+
+- Treat snippet HTML as unsafe unless you explicitly sanitize it.
+- Enable `sanitize` in `SnippetClient` (or `compile-page --sanitize`) for user-generated or otherwise untrusted content.
+- If you disable sanitization, you are responsible for preventing script injection and dangerous attributes in rendered output.
 
 ## Writing snippets
 

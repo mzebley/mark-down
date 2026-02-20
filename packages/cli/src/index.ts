@@ -11,7 +11,7 @@ const program = new Command();
 program
   .name("mark-down")
   .description(`${brand} CLI for building snippet manifests`)
-  .version("1.2.1");
+  .version("1.2.3");
 
 program
   .command("build")

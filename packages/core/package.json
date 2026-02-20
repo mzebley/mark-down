@@ -1,6 +1,6 @@
 {
   "name": "@mzebley/mark-down",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "mark↓ core runtime and shared utilities",
   "type": "module",
   "types": "dist/index.d.ts",

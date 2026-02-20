@@ -104,12 +104,7 @@ export function createSnippet(
 function normalizeKnownFields(data: Record<string, unknown>) {
   return {
     title: typeof data.title === "string" ? data.title : undefined,
-    order:
-      typeof data.order === "number"
-        ? data.order
-        : data.order === null
-          ? null
-          : undefined,
+    order: typeof data.order === "number" ? data.order : undefined,
     type: typeof data.type === "string" ? data.type : undefined,
     tags: normalizeTags(data.tags),
     draft: data.draft === true ? true : undefined,

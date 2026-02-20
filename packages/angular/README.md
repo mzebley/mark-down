@@ -94,10 +94,17 @@ Render snippets declaratively with the bundled standalone component:
 
 Features:
 
-- Uses Angular's `DomSanitizer` to render HTML safely.
+- Uses Angular's `DomSanitizer` for trusted HTML binding and DOMPurify in browser rendering.
 - Emits a `loaded` event once the snippet resolves so parent components can react.
 - Provides a loading placeholder and gracefully emits `undefined` when the slug cannot be resolved.
 - Supports `class`/`ngClass` bindings for styling since it renders a standard `<div>`.
+
+### Security warning
+
+The Angular adapter is intentionally compatible with untrusted/unsanitized snippet pipelines. That flexibility is a feature, but it means you must decide where sanitization happens:
+
+- For untrusted content, sanitize in `SnippetClient` (`sanitize` option) and/or during build with `mark-down compile-page --sanitize`.
+- If sanitization is disabled, snippet HTML is treated as trusted and may include dangerous markup.
 
 ## Server-side rendering
 

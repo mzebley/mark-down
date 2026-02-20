@@ -16,5 +16,13 @@
   "rules": {
     "react/react-in-jsx-scope": "off"
   },
+  "overrides": [
+    {
+      "files": ["www/**/*.js"],
+      "env": {
+        "browser": true
+      }
+    }
+  ],
   "ignorePatterns": ["dist", "node_modules"]
 }

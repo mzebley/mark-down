@@ -44,7 +44,7 @@ The CLI walks the directory tree, gathers front matter, and writes `snippets-ind
 
 - Discovers `*.md` files under `sourceDir` (defaults to `content/snippets`).
 - Parses YAML with the `yaml` package, normalizes slugs, flags duplicates, and removes drafts (`draft: true`).
-- Writes `snippets-index.json` to the source directory by default (use `--outDir` to override).
+- Writes `snippets-index.json` to the source directory by default (use `-o` / `--output` to override).
 - Supports relative or absolute paths.
 
 ### `mark-down watch <sourceDir>`
@@ -83,7 +83,7 @@ Add flags directly after the command (`mark-down build content/snippets -o publi
 Use watch mode when authoring content:
 
 ```bash
-mark-down watch content/snippets --outDir public/snippets
+mark-down watch content/snippets --output public/snippets-index.json
 ```
 
 The CLI will rebuild whenever files are created, changed, or removed.

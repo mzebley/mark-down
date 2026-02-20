@@ -10,7 +10,14 @@ import {
 } from "@angular/core";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { BehaviorSubject, Observable, of } from "rxjs";
-import { catchError, map, shareReplay, switchMap, tap } from "rxjs/operators";
+import {
+  catchError,
+  map,
+  shareReplay,
+  startWith,
+  switchMap,
+  tap,
+} from "rxjs/operators";
 import type { Snippet } from "@mzebley/mark-down";
 import { SnippetService } from "./snippet.service";
 import DOMPurify from "dompurify";
@@ -20,12 +27,25 @@ import DOMPurify from "dompurify";
   standalone: true,
   imports: [CommonModule],
   template: `
-    <ng-container *ngIf="content$ | async as html; else loading">
-      <div class="mark-down-snippet" [innerHTML]="html"></div>
+    <ng-container *ngIf="state$ | async as state">
+      <div *ngIf="state.loading" class="mark-down-snippet--loading">
+        Loading snippet…
+      </div>
+      <div *ngIf="!state.loading && state.error" class="mark-down-snippet--error">
+        Unable to load snippet.
+      </div>
+      <div
+        *ngIf="!state.loading && !state.error && state.html !== null"
+        class="mark-down-snippet"
+        [innerHTML]="state.html"
+      ></div>
+      <div
+        *ngIf="!state.loading && !state.error && state.html === null"
+        class="mark-down-snippet--empty"
+      >
+        Snippet not found.
+      </div>
     </ng-container>
-    <ng-template #loading>
-      <div class="mark-down-snippet--loading">Loading snippet…</div>
-    </ng-template>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -37,30 +57,51 @@ export class SnippetViewComponent implements OnChanges {
   @Input() slug?: string;
   @Output() readonly loaded = new EventEmitter<Snippet | undefined>();
 
-  private readonly snippet$: Observable<Snippet | null> = this.slug$.pipe(
+  readonly state$: Observable<{
+    loading: boolean;
+    error: boolean;
+    html: SafeHtml | null;
+  }> = this.slug$.pipe(
     switchMap((slug) =>
       slug
-        ? this.snippets.get(slug).pipe(catchError(() => of(null)))
-        : of(null),
+        ? this.snippets.get(slug).pipe(
+            map((snippet) => ({ loading: false, error: false, snippet })),
+            catchError(() =>
+              of({ loading: false, error: true, snippet: null as Snippet | null }),
+            ),
+            startWith({ loading: true, error: false, snippet: null as Snippet | null }),
+          )
+        : of({ loading: false, error: false, snippet: null as Snippet | null }),
     ),
-    tap((snippet) => this.loaded.emit(snippet ?? undefined)),
+    tap((state) => {
+      if (!state.loading) {
+        this.loaded.emit(state.snippet ?? undefined);
+      }
+    }),
+    map((state) => ({
+      loading: state.loading,
+      error: state.error,
+      html: this.toSafeHtml(state.snippet),
+    })),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
-  readonly content$: Observable<SafeHtml | null> = this.snippet$.pipe(
-    map((snippet) => {
-      if (!snippet) {
-        return null;
-      }
-      if (typeof window === "undefined") {
-        return this.sanitizer.bypassSecurityTrustHtml(snippet.html);
-      }
-      const sanitized = DOMPurify.sanitize(snippet.html);
-      return this.sanitizer.bypassSecurityTrustHtml(sanitized);
-    }),
+  readonly content$: Observable<SafeHtml | null> = this.state$.pipe(
+    map((state) => state.html),
   );
 
   ngOnChanges(): void {
     this.slug$.next(this.slug ?? null);
+  }
+
+  private toSafeHtml(snippet: Snippet | null): SafeHtml | null {
+    if (!snippet) {
+      return null;
+    }
+    if (typeof window === "undefined") {
+      return this.sanitizer.bypassSecurityTrustHtml(snippet.html);
+    }
+    const sanitized = DOMPurify.sanitize(snippet.html);
+    return this.sanitizer.bypassSecurityTrustHtml(sanitized);
   }
 }

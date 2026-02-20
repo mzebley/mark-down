@@ -1,6 +1,6 @@
 {
   "name": "@mzebley/mark-down-angular",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "mark↓ Angular Adapter",
   "type": "module",
   "main": "dist/index.cjs",

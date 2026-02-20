@@ -59,7 +59,9 @@ The client lazily loads the manifest when first needed, then fetches Markdown fi
 
 All options are optional except `manifest`. Results are rendered with `marked` by default; override at the application level if you need a different Markdown pipeline.
 
-`sanitize` is opt-in and uses [`sanitize-html`](https://github.com/apostrophecms/sanitize-html) under the hood. Use the `policy` presets for common Markdown output or override the `config` to tweak allowed tags/attributes. The React and Angular adapters already sanitize before rendering; enabling `sanitize` with those adapters is usually redundant.
+`sanitize` is opt-in and uses [`sanitize-html`](https://github.com/apostrophecms/sanitize-html) under the hood. Use the `policy` presets for common Markdown output or override the `config` to tweak allowed tags/attributes.
+
+Security note: mark↓ intentionally allows unsanitized output when `sanitize` is omitted. This is a supported feature for trusted pipelines, but it is unsafe for untrusted content. Enable `sanitize` whenever snippets can be user-generated or externally sourced.
 
 ## Working with snippets
 
