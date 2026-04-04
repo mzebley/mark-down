@@ -37,5 +37,8 @@
     "tsup": "^8.0.1",
     "typescript": "^5.4.3",
     "vitest": "^1.4.0"
+  },
+  "dependencies": {
+    "zebkit": "github:mzebley/zebkit"
   }
 }

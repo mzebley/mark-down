@@ -1,0 +1,8 @@
+{
+  "tokens": {
+    "destinationPath": "./www",
+    "assetFilePath": "/",
+    "theme": "default",
+    "customTokenPath": "./tokens"
+  }
+}
