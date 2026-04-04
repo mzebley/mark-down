@@ -2,7 +2,8 @@
   "tokens": {
     "destinationPath": "./www",
     "assetFilePath": "/",
-    "theme": "default",
+    "theme": "mark-down",
+    "customThemeName": "mark-down",
     "customTokenPath": "./tokens"
   }
 }
