@@ -1,0 +1,47 @@
+{
+  "canvas": {
+    "$value": "{accent-primary.900}",
+    "$type": "color",
+    "$description": "Dark-mode page canvas."
+  },
+  "canvas-subtle": {
+    "$value": "{color.dusk-900}",
+    "$type": "color",
+    "$description": "Dark-mode raised content surface."
+  },
+  "canvas-muted": {
+    "$value": "{accent-primary.950}",
+    "$type": "color",
+    "$description": "Dark-mode low-emphasis surface."
+  },
+  "canvas-inverse-subtle": {
+    "$value": "{color.charcoal-900}",
+    "$type": "color",
+    "$description": "Dark-mode terminal surface."
+  },
+  "ink": {
+    "$value": "{brand.200}",
+    "$type": "color",
+    "$description": "Dark-mode primary text."
+  },
+  "ink-subtle": {
+    "$value": "{brand.300}",
+    "$type": "color",
+    "$description": "Dark-mode lower-emphasis text."
+  },
+  "ink-muted": {
+    "$value": "{brand.500}",
+    "$type": "color",
+    "$description": "Dark-mode muted text and icons."
+  },
+  "ink-emphasis": {
+    "$value": "{brand.50}",
+    "$type": "color",
+    "$description": "Dark-mode high-emphasis text."
+  },
+  "ink-inverse-muted": {
+    "$value": "{color.dusk-600}",
+    "$type": "color",
+    "$description": "Dark-mode terminal decoration."
+  }
+}

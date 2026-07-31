@@ -1,0 +1,103 @@
+{
+  "button": {
+    "ghost": {
+      "axis": "style",
+      "description": "Transparent canvas and border; ink takes the action role with a subtle hover wash.",
+      "overrides": {
+        "canvas": "transparent",
+        "canvas-hover": "{action.canvas-subtle}",
+        "canvas-active": "{action.canvas-muted}",
+        "canvas-disabled": "transparent",
+        "ink": "{action.ink}",
+        "ink-hover": "{action.ink-emphasis}",
+        "ink-active": "{action.ink-emphasis}",
+        "border-color": "transparent",
+        "border-color-hover": "transparent",
+        "border-color-active": "transparent",
+        "border-color-disabled": "transparent"
+      }
+    },
+    "lg": {
+      "axis": "size",
+      "description": "Larger type and padding.",
+      "overrides": {
+        "font-size": "{font-size.3xl}",
+        "padding-inline": "{spacing.lg}",
+        "padding-block": "{spacing.sm}",
+        "icon-size": "1.5rem"
+      }
+    },
+    "outline": {
+      "axis": "style",
+      "description": "Transparent canvas with an action-colored border; subtle wash on hover.",
+      "overrides": {
+        "canvas": "transparent",
+        "canvas-hover": "{action.canvas-subtle}",
+        "canvas-active": "{action.canvas-muted}",
+        "canvas-disabled": "transparent",
+        "ink": "{action.ink}",
+        "ink-hover": "{action.ink-emphasis}",
+        "ink-active": "{action.ink-emphasis}",
+        "border-color": "{action.border}",
+        "border-color-hover": "{action.border-emphasis}",
+        "border-color-active": "{action.border-emphasis}"
+      }
+    },
+    "sm": {
+      "axis": "size",
+      "description": "Smaller type and padding; keeps the 44px minimum tap target.",
+      "overrides": {
+        "font-size": "{font-size.sm}",
+        "padding-inline": "{spacing.xs}",
+        "padding-block": "{spacing.2xs}",
+        "icon-size": "1rem"
+      }
+    },
+    "subtle": {
+      "axis": "style",
+      "description": "Low-emphasis fill on the subtle action canvas; no border.",
+      "overrides": {
+        "canvas": "{action.canvas-subtle}",
+        "canvas-hover": "{action.canvas-muted}",
+        "canvas-active": "{action.canvas-muted}",
+        "ink": "{action.ink}",
+        "ink-hover": "{action.ink-emphasis}",
+        "ink-active": "{action.ink-emphasis}",
+        "border-color": "transparent",
+        "border-color-hover": "transparent",
+        "border-color-active": "transparent"
+      }
+    },
+    "scroll-indicator": {
+      "axis": "style",
+      "description": "Icon-only transparent control that advances from the hero.",
+      "overrides": {
+        "canvas": "transparent",
+        "canvas-hover": "transparent",
+        "canvas-active": "transparent",
+        "ink": "{app.ink-muted}",
+        "ink-hover": "{accent-primary.ink}",
+        "ink-active": "{accent-primary.ink}",
+        "border-color": "transparent",
+        "border-color-hover": "transparent",
+        "border-color-active": "transparent",
+        "box-shadow": "none",
+        "box-shadow-hover": "none",
+        "transform": "none",
+        "transform-hover": "none",
+        "transform-active": "none"
+      }
+    },
+    "icon-only": {
+      "axis": "size",
+      "description": "Compact icon-only control with a compliant interaction target.",
+      "overrides": {
+        "padding-inline": "0",
+        "padding-block": "0",
+        "min-width": "{a11y.min-interaction-size}",
+        "min-height": "{a11y.min-interaction-size}",
+        "icon-size": "{spacing.lg}"
+      }
+    }
+  }
+}

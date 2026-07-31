@@ -1,0 +1,11 @@
+{
+  "card": {
+    "snippet": {
+      "axis": "style",
+      "description": "Dark-mode code-example surface without the light inset shadow.",
+      "overrides": {
+        "box-shadow": "{elevation.none}"
+      }
+    }
+  }
+}

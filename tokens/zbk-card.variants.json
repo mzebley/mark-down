@@ -1,0 +1,98 @@
+{
+  "card": {
+    "auto-orient": {
+      "axis": "layout",
+      "description": "Stacks or goes side by side based on the card's own inline size.",
+      "overrides": {
+        "container-type": "inline-size",
+        "flex-direction": "row",
+        "flex-wrap": "wrap",
+        "media-flex": "1 1 100%",
+        "body-flex": "1 1 100%"
+      }
+    },
+    "elevated": {
+      "axis": "style",
+      "description": "A canvas surface with no border and a shadow that deepens on hover.",
+      "overrides": {
+        "box-shadow": "{elevation.sm}",
+        "box-shadow-hover": "{elevation.md}",
+        "border-width": "0",
+        "canvas": "{app.canvas}"
+      }
+    },
+    "filled": {
+      "axis": "style",
+      "description": "A muted filled surface with neither border nor elevation.",
+      "overrides": {
+        "box-shadow": "{elevation.none}",
+        "border-width": "0",
+        "canvas": "{app.canvas-muted}"
+      }
+    },
+    "horizontal": {
+      "axis": "layout",
+      "description": "Places media and body side by side with equal flexible shares.",
+      "overrides": {
+        "flex-direction": "row",
+        "media-flex": "1 1 0",
+        "body-flex": "1 1 0",
+        "media-inline-size": "auto",
+        "media-block-size": "100%"
+      }
+    },
+    "media-end": {
+      "axis": "media-placement",
+      "description": "Moves the media region after the body without changing authored order.",
+      "overrides": {
+        "media-order": "1"
+      }
+    },
+    "outlined": {
+      "axis": "style",
+      "description": "A canvas surface bounded by the semantic border with no elevation.",
+      "overrides": {
+        "box-shadow": "{elevation.none}",
+        "border-width": "{border.width-sm}",
+        "canvas": "{app.canvas}"
+      }
+    },
+    "plain": {
+      "axis": "style",
+      "description": "An unframed transparent surface whose body aligns with its media edge.",
+      "overrides": {
+        "box-shadow": "{elevation.none}",
+        "border-width": "0",
+        "canvas": "transparent",
+        "body-padding-inline": "0"
+      }
+    },
+    "snippet": {
+      "axis": "style",
+      "description": "Inset code-example surface used by the mark-down flow.",
+      "overrides": {
+        "inline-size": "100%",
+        "max-inline-size": "{spacing.tablet}",
+        "body-gap": "{spacing.sm}",
+        "body-padding-inline": "{spacing.105}",
+        "body-padding-block": "{spacing.105}",
+        "canvas": "{app.canvas-subtle}",
+        "ink": "{app.ink}",
+        "border-width": "0",
+        "border-radius": "{spacing.105}",
+        "box-shadow": "{elevation.inner}",
+        "cursor": "default",
+        "content-ink": "{app.ink}",
+        "content-font-family": "{font-family.code}",
+        "content-font-size": "{font-size.sm}",
+        "content-line-height": "{line-height.4}",
+        "meta-ink": "{accent-primary.ink}",
+        "meta-font-size": "{font-size.xs}",
+        "meta-font-weight": "{font-weight.bold}",
+        "meta-letter-spacing": "{letter-spacing.wide}",
+        "meta-text-transform": "uppercase",
+        "meta-margin-block": "0"
+      }
+    }
+  }
+}

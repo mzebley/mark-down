@@ -1,66 +1,131 @@
 {
-  "viewport-font-size-modifier": {
-    "value": ".23vw",
-    "type": "utility",
-    "description": "Viewport modifier for responsive font sizing, added to each root font size on screen resolutions over 40rem. Set to 0 to disable responsive font sizing."
-  },
-  "max-font-size-modifer": {
-    "value": "1.25",
-    "type": "utility",
-    "description": "Maximum font size increase allowed when using responsive font sizing."
-  },
   "3xs": {
-    "value": ".75rem",
-    "type": "rootFontSize",
-    "description": "Smallest font size.",
-    "a11y": "--zbk-a11y-font-size-modifier-3xs"
+    "$type": "cssDimension",
+    "$description": "Smallest font size.",
+    "$extensions": {
+      "dev.zebkit": {
+        "a11y": "--zbk-a11y-font-size-modifier-3xs",
+        "scale": {
+          "index": -4
+        }
+      }
+    },
+    "$value": ".75rem"
   },
   "2xs": {
-    "value": ".82rem",
-    "type": "rootFontSize",
-    "description": "Second smallest font size.",
-    "a11y": "--zbk-a11y-font-size-modifier-2xs"
+    "$type": "cssDimension",
+    "$description": "Second smallest font size.",
+    "$extensions": {
+      "dev.zebkit": {
+        "a11y": "--zbk-a11y-font-size-modifier-2xs",
+        "scale": {
+          "index": -3
+        }
+      }
+    },
+    "$value": ".82rem"
   },
   "xs": {
-    "value": ".9rem",
-    "type": "rootFontSize",
-    "description": "Extra small font size.",
-    "a11y": "--zbk-a11y-font-size-modifier-xs"
+    "$type": "cssDimension",
+    "$description": "Extra small font size.",
+    "$extensions": {
+      "dev.zebkit": {
+        "a11y": "--zbk-a11y-font-size-modifier-xs",
+        "scale": {
+          "index": -2
+        }
+      }
+    },
+    "$value": ".9rem"
   },
   "sm": {
-    "value": "1rem",
-    "type": "rootFontSize",
-    "description": "Small font size.",
-    "a11y": "--zbk-a11y-font-size-modifier-sm"
+    "$type": "cssDimension",
+    "$description": "Small font size.",
+    "$extensions": {
+      "dev.zebkit": {
+        "a11y": "--zbk-a11y-font-size-modifier-sm",
+        "scale": {
+          "index": -1
+        }
+      }
+    },
+    "$value": "1rem"
   },
   "md": {
-    "value": "1.125rem",
-    "type": "rootFontSize",
-    "description": "Medium font size.",
-    "a11y": "--zbk-a11y-font-size-modifier-md"
+    "$type": "cssDimension",
+    "$description": "Medium font size.",
+    "$extensions": {
+      "dev.zebkit": {
+        "a11y": "--zbk-a11y-font-size-modifier-md",
+        "scale": {
+          "index": 0
+        }
+      }
+    },
+    "$value": "1.125rem"
   },
   "lg": {
-    "value": "1.5rem",
-    "type": "rootFontSize",
-    "description": "Large font size.",
-    "a11y": "--zbk-a11y-font-size-modifier-lg"
+    "$type": "cssDimension",
+    "$description": "Large font size.",
+    "$extensions": {
+      "dev.zebkit": {
+        "a11y": "--zbk-a11y-font-size-modifier-lg",
+        "scale": {
+          "index": 1
+        }
+      }
+    },
+    "$value": "1.5rem"
   },
   "xl": {
-    "value": "2rem",
-    "type": "rootFontSize",
-    "description": "Extra large font size.",
-    "a11y": "--zbk-a11y-font-size-modifier-xl"
+    "$type": "cssDimension",
+    "$description": "Extra large font size.",
+    "$extensions": {
+      "dev.zebkit": {
+        "a11y": "--zbk-a11y-font-size-modifier-xl",
+        "scale": {
+          "index": 2
+        }
+      }
+    },
+    "$value": "2rem"
   },
   "2xl": {
-    "value": "2.6rem",
-    "type": "rootFontSize",
-    "description": "Double extra large font size.",
-    "a11y": "--zbk-a11y-font-size-modifier-2xl"
+    "$type": "cssDimension",
+    "$description": "Double extra large font size.",
+    "$extensions": {
+      "dev.zebkit": {
+        "a11y": "--zbk-a11y-font-size-modifier-2xl",
+        "scale": {
+          "index": 3
+        }
+      }
+    },
+    "$value": "2.6rem"
   },
   "3xl": {
-    "value": "3.5rem",
-    "type": "rootFontSize",
-    "description": "Triple extra large font size.",
-    "a11y": "--zbk-a11y-font-size-modifier-3xl"
+    "$type": "cssDimension",
+    "$description": "Triple extra large font size.",
+    "$extensions": {
+      "dev.zebkit": {
+        "a11y": "--zbk-a11y-font-size-modifier-3xl",
+        "scale": {
+          "index": 4
+        }
+      }
+    },
+    "$value": "3.5rem"
+  },
+  "$extensions": {
+    "dev.zebkit": {
+      "scale": {
+        "min-viewport": "360px",
+        "max-viewport": "1240px",
+        "min-base": "1.125rem",
+        "max-base": "1.25rem",
+        "min-ratio": 1.2,
+        "max-ratio": 1.25
+      }
+    }
   }
 }

@@ -1,17 +1,17 @@
 {
   "color": {
-    "value": "#FF55AA",
-    "type": "color",
-    "description": "Color of focus outline"
+    "$value": "#FF55AA",
+    "$type": "color",
+    "$description": "Color of focus outline"
   },
   "width": {
-    "value": "{spacing.025}",
-    "type": "sizing",
-    "description": "Width of focus outline"
+    "$value": "{spacing.025}",
+    "$type": "dimension",
+    "$description": "Width of focus outline"
   },
   "offset": {
-    "value": "{spacing.025}",
-    "type": "spacing",
-    "description": "Offset distance of focus outline"
+    "$value": "{spacing.025}",
+    "$type": "dimension",
+    "$description": "Offset distance of focus outline"
   }
 }

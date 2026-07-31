@@ -1,0 +1,12 @@
+{
+  "canvas-muted": {
+    "$value": "{color.dusk-900}",
+    "$type": "color",
+    "$description": "Dark-mode inline code highlight."
+  },
+  "ink": {
+    "$value": "{accent-primary.300}",
+    "$type": "color",
+    "$description": "Dark-mode primary accent ink."
+  }
+}

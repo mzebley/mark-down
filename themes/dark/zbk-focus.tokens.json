@@ -1,0 +1,7 @@
+{
+  "color": {
+    "$value": "{color.mint-300}",
+    "$type": "color",
+    "$description": "Dark-mode keyboard focus outline."
+  }
+}

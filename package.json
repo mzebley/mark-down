@@ -5,6 +5,9 @@
   "description": "mark↓ monorepo containing core, CLI, Angular, and React adapters",
   "scripts": {
     "build": "npm run build -w @mzebley/mark-down && npm run build -w @mzebley/mark-down-cli && npm run build -w @mzebley/mark-down-angular && npm run build -w @mzebley/mark-down-react",
+    "build:www": "zebkit build && sass www/styles.scss:www/styles.css && npm run build:www:runtime",
+    "build:www:runtime": "esbuild www/zebkit.entry.js --bundle --minify --format=esm --outfile=www/zebkit.js",
+    "check:zebkit": "zebkit check --format=json",
     "test": "vitest run --exclude tests/cli.e2e.spec.ts",
     "test:watch": "vitest",
     "lint": "eslint .",
@@ -27,18 +30,20 @@
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
     "@vitest/coverage-v8": "^1.4.0",
+    "esbuild": "^0.27.7",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.34.1",
     "execa": "^8.0.1",
     "marked": "^11.1.0",
     "prettier": "^3.2.5",
+    "sass": "^1.102.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.0.1",
     "typescript": "^5.4.3",
     "vitest": "^1.4.0"
   },
   "dependencies": {
-    "zebkit": "github:mzebley/zebkit"
+    "zebkit": "npm:@mzebley/zebkit@0.11.0"
   }
 }

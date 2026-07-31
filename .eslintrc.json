@@ -24,5 +24,11 @@
       }
     }
   ],
-  "ignorePatterns": ["dist", "node_modules"]
+  "ignorePatterns": [
+    "dist",
+    "node_modules",
+    "www/zebkit.js",
+    "www/zebkit.runtime.js",
+    "zebkit/context"
+  ]
 }

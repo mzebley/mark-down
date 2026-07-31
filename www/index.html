@@ -47,7 +47,7 @@
               ? "dark"
               : "light";
 
-        root.dataset.theme = theme;
+        root.dataset.zbkTheme = theme;
         root.dataset.themeSource = storedTheme ? "manual" : "system";
       })();
     </script>
@@ -56,17 +56,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
     <link rel="stylesheet" href="zbk-mark-down.min.css" />
+    <link rel="stylesheet" href="zbk-dark.css" />
     <link rel="stylesheet" href="styles.css" />
     <script
       src="https://cdn.jsdelivr.net/gh/mzebley/dynamowaves/dist/dynamowaves.min.js"
       crossorigin="anonymous"
     ></script>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/theme-toggles@4.10.1/css/within.min.css"
-      integrity="sha256-4qLHDhzuDV3IgrWCWtrSlFovj05xXNXXOjXF5Oxsg4Y="
-      crossorigin="anonymous"
-    />
+    <script src="zebkit.js" type="module"></script>
     <script src="script.js" type="module"></script>
   </head>
 
@@ -79,9 +75,12 @@
       <section
         class="hero padding-inline-2 width-full display-flex gap-2 tablet:gap-4 justify-content-center tablet:align-items-center padding-block-8 flex-direction-column tablet:flex-direction-row"
       >
-        <label tabindex="0" class="theme-toggle" title="Toggle theme">
-          <input type="checkbox" id="theme-toggle-input" />
-          <span class="theme-toggle-sr">Toggle theme</span>
+        <zbk-toggle
+          class="theme-toggle"
+          variant="theme-icon icon-only"
+          title="Toggle theme"
+        >
+          <span class="visually-hidden">Dark mode</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
@@ -108,7 +107,7 @@
               d="M16 9.5c-3.6 0-6.4 2.9-6.4 6.4s2.8 6.5 6.4 6.5 6.4-2.9 6.4-6.4-2.8-6.5-6.4-6.5z"
             ></path>
           </svg>
-        </label>
+        </zbk-toggle>
         <div class="display-flex flex-direction-column gap-025 tablet:gap-05">
           <div class="hero__logo display-flex align-items-end">
             <svg
@@ -134,7 +133,7 @@
             </svg>
           </div>
           <p
-            class="hero__tag margin-0 padding-0 font-md tablet:font-lg ink-brand-600"
+            class="hero__tag margin-0 padding-0 font-md tablet:font-lg ink-app-muted"
           >
             a markdown snippet engine
           </p>
@@ -155,10 +154,9 @@
               fill="none"
               stroke="currentColor"
               stroke-width="3"
-              class="width-105 tablet:width-2"
+              class="width-105 tablet:width-2 icon"
               stroke-linecap="round"
               stroke-linejoin="round"
-              class="icon"
             >
               <path stroke="none" d="M0 0h24v24H0z" fill="none" />
               <path d="M6 6v6a3 3 0 0 0 3 3h10l-4 -4m0 8l4 -4" />
@@ -174,10 +172,9 @@
               fill="none"
               stroke="currentColor"
               stroke-width="3"
-              class="width-105 tablet:width-2"
+              class="width-105 tablet:width-2 icon"
               stroke-linecap="round"
               stroke-linejoin="round"
-              class="icon"
             >
               <path stroke="none" d="M0 0h24v24H0z" fill="none" />
               <path d="M6 6v6a3 3 0 0 0 3 3h10l-4 -4m0 8l4 -4" />
@@ -185,27 +182,30 @@
             Render it anywhere.
           </p>
         </div>
-        <svg
-          tabindex="0"
-          onclick="scrollToTeaser()"
-          xmlns="http://www.w3.org/2000/svg"
-          role="button"
-          aria-label="Scroll to content"
-          viewBox="180.65 2.595 73.176 114.991"
+        <zbk-button
+          variant="scroll-indicator icon-only"
           class="scroll-indicator"
-          id="scroll_indicator"
         >
-          <path
-            d="M 191.778 69.87 L 208.639 88.754 L 208.639 2.595 L 225.837 2.595 L 225.837 88.754 L 242.698 69.87 L 253.826 80.998 L 217.238 117.586 L 180.65 80.998 L 191.778 69.87 Z"
-          ></path>
-        </svg>
+          <span class="visually-hidden">Scroll to content</span>
+          <svg
+            slot="icon"
+            data-position="end"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="180.65 2.595 73.176 114.991"
+            fill="currentColor"
+          >
+            <path
+              d="M 191.778 69.87 L 208.639 88.754 L 208.639 2.595 L 225.837 2.595 L 225.837 88.754 L 242.698 69.87 L 253.826 80.998 L 217.238 117.586 L 180.65 80.998 L 191.778 69.87 Z"
+            ></path>
+          </svg>
+        </zbk-button>
       </section>
       <section
         class="teaser padding-inline-2 display-flex justify-content-center width-full margin-block-8"
         id="teaser"
       >
         <p class="font-md margin-0 measure-3">
-          <span class="font-alt font-lg ink-accent-primary-700">mark↓</span> is
+          <span class="font-alt font-lg ink-accent-primary">mark↓</span> is
           a tiny snippet engine for structured Markdown content with build-time
           indexing, runtime fetching, and clean HTML rendering. It's
           framework-agnostic with optional Angular &amp; React adapters, and
@@ -218,8 +218,8 @@
         class="flow padding-inline-05 display-flex flex-direction-column gap-2 margin-block-start-4 margin-block-end-8 align-items-center"
         aria-label="Snippet flow"
       >
-        <div class="card">
-          <p class="card__label">Markdown</p>
+        <zbk-card variant="snippet">
+          <span slot="meta" data-position="start">Markdown</span>
           <pre><code>---
 slug: getting-started
 title: Getting Started
@@ -228,7 +228,7 @@ tags: [intro]
 # Getting started
 Some copy in **Markdown**.
 </code></pre>
-        </div>
+        </zbk-card>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           role="img"
@@ -240,8 +240,8 @@ Some copy in **Markdown**.
             d="M 191.778 69.87 L 208.639 88.754 L 208.639 2.595 L 225.837 2.595 L 225.837 88.754 L 242.698 69.87 L 253.826 80.998 L 217.238 117.586 L 180.65 80.998 L 191.778 69.87 Z"
           ></path>
         </svg>
-        <div class="card">
-          <p class="card__label">Indexed snippet</p>
+        <zbk-card variant="snippet">
+          <span slot="meta" data-position="start">Indexed snippet</span>
           <pre><code>{
   "slug": "getting-started",
   "title": "Getting Started",
@@ -250,7 +250,7 @@ Some copy in **Markdown**.
   "group": "guide"
 }
 </code></pre>
-        </div>
+        </zbk-card>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           role="img"
@@ -262,11 +262,11 @@ Some copy in **Markdown**.
             d="M 191.778 69.87 L 208.639 88.754 L 208.639 2.595 L 225.837 2.595 L 225.837 88.754 L 242.698 69.87 L 253.826 80.998 L 217.238 117.586 L 180.65 80.998 L 191.778 69.87 Z"
           ></path>
         </svg>
-        <div class="card">
-          <p class="card__label">Written HTML</p>
+        <zbk-card variant="snippet">
+          <span slot="meta" data-position="start">Written HTML</span>
           <pre><code>&lt;div data-snippet="getting-started"&gt;&lt;/div&gt;
 </code></pre>
-        </div>
+        </zbk-card>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           role="img"
@@ -278,14 +278,14 @@ Some copy in **Markdown**.
             d="M 191.778 69.87 L 208.639 88.754 L 208.639 2.595 L 225.837 2.595 L 225.837 88.754 L 242.698 69.87 L 253.826 80.998 L 217.238 117.586 L 180.65 80.998 L 191.778 69.87 Z"
           ></path>
         </svg>
-        <div class="card">
-          <p class="card__label">Rendered HTML</p>
+        <zbk-card variant="snippet">
+          <span slot="meta" data-position="start">Rendered HTML</span>
           <pre><code>&lt;div&gt;
   &lt;h1&gt;Getting started&lt;/h1&gt;
   &lt;p&gt;Some copy in &lt;strong&gt;Markdown&lt;/strong&gt;.&lt;/p&gt;
 &lt;/div&gt;
 </code></pre>
-        </div>
+        </zbk-card>
       </section>
 
       <section
@@ -301,12 +301,13 @@ Some copy in **Markdown**.
         <div
           class="terminal__actions display-flex flex-direction-column gap-2 align-items-center tablet:flex-direction-column tablet:gap-105 tablet:align-items-start"
         >
-          <a
-            class="btn primary"
+          <zbk-link
             href="https://github.com/mzebley/mark-down"
             target="_blank"
-            >View on GitHub <span class="sr-only">opens in new tab</span>
+            >View on GitHub
             <svg
+              slot="icon"
+              data-position="end"
               xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"
@@ -317,8 +318,6 @@ Some copy in **Markdown**.
               stroke-linecap="round"
               stroke-linejoin="round"
               class="icon"
-              role="img"
-              aria-hidden="true"
             >
               <path stroke="none" d="M0 0h24v24H0z" fill="none" />
               <path
@@ -326,18 +325,17 @@ Some copy in **Markdown**.
               />
               <path d="M11 13l9 -9" />
               <path d="M15 4h5v5" /></svg
-          ></a>
-          <a
-            class="btn ghost"
+          ></zbk-link>
+          <zbk-link
             href="https://www.npmjs.com/package/@mzebley/mark-down"
             target="_blank"
-            >View on npm <span class="sr-only">opens in new tab</span>
+            >View on npm
             <svg
+              slot="icon"
+              data-position="end"
               xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"
-              role="img"
-              aria-hidden="true"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -352,7 +350,7 @@ Some copy in **Markdown**.
               />
               <path d="M11 13l9 -9" />
               <path d="M15 4h5v5" /></svg
-          ></a>
+          ></zbk-link>
         </div>
       </section>
     </main>
@@ -361,11 +359,13 @@ Some copy in **Markdown**.
       class="footer width-full display-flex justify-content-between gap-2 align-items-end font-xs padding-inline-1 padding-block-start-1 padding-block-end-05 tablet:padding-inline-2"
     >
       <p>Open-source · MIT License</p>
-      <a
+      <zbk-link
         href="https://markzebley.com"
-        aria-label="External link to markzebley.com homepage"
         target="_blank"
+        ><span class="visually-hidden">markzebley.com homepage</span
         ><svg
+          slot="icon"
+          data-position="end"
           version="1.0"
           viewBox="0 0 598.000000 598.000000"
           preserveAspectRatio="xMidYMid meet"
@@ -460,112 +460,8 @@ Some copy in **Markdown**.
     21 18 24 16 4 -3 6 -42 5 -88z"
             ></path>
           </g></svg
-      ></a>
+      ></zbk-link>
     </footer>
 
-    <script>
-      (function () {
-        const storageKey = "markdown-theme";
-        const root = document.documentElement;
-        const toggleLabel = document.querySelector(".theme-toggle");
-        const toggle = document.querySelector(
-          '.theme-toggle input[type="checkbox"]',
-        );
-        const prefersDarkQuery = "(prefers-color-scheme: dark)";
-        const mediaQuery = window.matchMedia
-          ? window.matchMedia(prefersDarkQuery)
-          : null;
-
-        const readStoredTheme = () => {
-          try {
-            return window.localStorage.getItem(storageKey);
-          } catch (error) {
-            return null;
-          }
-        };
-
-        const writeStoredTheme = (value) => {
-          try {
-            window.localStorage.setItem(storageKey, value);
-          } catch (error) {
-            /* localStorage unavailable */
-          }
-        };
-
-        const clearStoredTheme = () => {
-          try {
-            window.localStorage.removeItem(storageKey);
-          } catch (error) {
-            /* localStorage unavailable */
-          }
-        };
-
-        const applyTheme = (theme, source) => {
-          const nextTheme = theme === "dark" ? "dark" : "light";
-          root.dataset.theme = nextTheme;
-          root.dataset.themeSource = source;
-          if (toggle) {
-            toggle.checked = nextTheme === "dark";
-          }
-        };
-
-        const storedTheme = (() => {
-          const value = readStoredTheme();
-          return value === "dark" || value === "light" ? value : null;
-        })();
-
-        const initialTheme =
-          root.dataset.theme ||
-          storedTheme ||
-          (mediaQuery && mediaQuery.matches ? "dark" : "light");
-        const initialSource =
-          root.dataset.themeSource || (storedTheme ? "manual" : "system");
-        applyTheme(initialTheme, initialSource);
-
-        const handleToggle = (event) => {
-          const nextTheme = event.target.checked ? "dark" : "light";
-          applyTheme(nextTheme, "manual");
-          writeStoredTheme(nextTheme);
-        };
-
-        if (toggle) {
-          toggle.addEventListener("change", handleToggle);
-        }
-
-        const handleLabelKeydown = (event) => {
-          const isActivationKey =
-            event.key === "Enter" ||
-            event.key === " " ||
-            event.key === "Spacebar";
-          if (!isActivationKey || !toggle) {
-            return;
-          }
-          event.preventDefault();
-          toggle.checked = !toggle.checked;
-          toggle.dispatchEvent(new Event("change", { bubbles: true }));
-        };
-
-        if (toggleLabel) {
-          toggleLabel.addEventListener("keydown", handleLabelKeydown);
-        }
-
-        const handleSystemPreferenceChange = (event) => {
-          if (root.dataset.themeSource === "manual") {
-            return;
-          }
-          const nextTheme = event.matches ? "dark" : "light";
-          applyTheme(nextTheme, "system");
-          clearStoredTheme();
-        };
-
-        if (mediaQuery) {
-          if (mediaQuery.addEventListener) {
-            mediaQuery.addEventListener("change", handleSystemPreferenceChange);
-          } else if (mediaQuery.addListener) {
-            mediaQuery.addListener(handleSystemPreferenceChange);
-          }
-        }
-      })();
-    </script>
   </body>
 </html>

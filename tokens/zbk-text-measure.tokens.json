@@ -1,27 +1,27 @@
 {
   "1": {
-    "value": "32ch",
-    "type": "sizing",
-    "description": "Cards, sidebars, tight UI."
+    "$value": "32ch",
+    "$type": "cssDimension",
+    "$description": "Cards, sidebars, tight UI."
   },
   "2": {
-    "value": "45ch",
-    "type": "sizing",
-    "description": "Short text blocks, captions."
+    "$value": "45ch",
+    "$type": "cssDimension",
+    "$description": "Short text blocks, captions."
   },
   "3": {
-    "value": "60ch",
-    "type": "sizing",
-    "description": "Base body content measure."
+    "$value": "60ch",
+    "$type": "cssDimension",
+    "$description": "Base body content measure."
   },
   "4": {
-    "value": "72ch",
-    "type": "sizing",
-    "description": "Articles, long-form content."
+    "$value": "72ch",
+    "$type": "cssDimension",
+    "$description": "Articles, long-form content."
   },
   "5": {
-    "value": "85ch",
-    "type": "sizing",
-    "description": "Articles, long-form content."
+    "$value": "85ch",
+    "$type": "cssDimension",
+    "$description": "Articles, long-form content."
   }
 }
